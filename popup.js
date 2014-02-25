@@ -24,10 +24,23 @@ var dwp = {
       function(message, sender, sendResponse) {
         alert(message);
     });
-    //chrome.tabs.executeScript({file: 'injectRegistration.js'});
-    var urlVar = "https://duckweb.uoregon.edu/pls/prod/hwskwbis.P_CourseEvaluations";
+
+	var urlVar = "https://duckweb.uoregon.edu/pls/prod/hwskwbis.P_CourseEvaluations";
     chrome.tabs.create({url: urlVar, active: false}, dwp.navigateEval);
+    
+  //this was added by sarah
+	chrome.tabs.executeScript({ file: "jquery.js" }, function() {
+		chrome.tabs.executeScript({ file: "jquery-ui.js" }, function() {
+    		chrome.tabs.executeScript({ file: "injectRegistration.js" });
+		});
+	});
+	chrome.tabs.insertCSS({ file: 'jquery-ui.css' }, function() {
+		chrome.tabs.insertCSS({ file: 'tooltip.css' });
+	});
+    
     //window.close();
+    
+    
   }
 };
 
