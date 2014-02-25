@@ -1,4 +1,5 @@
-// This file contains the code that gets injected into the body of the page
+// This file contains the code that gets injected into the 
+// body of the duckweb class registration page
 
 // Edit contents of main table on duckweb class lookup page
 var table = document.getElementsByTagName("tbody"); 

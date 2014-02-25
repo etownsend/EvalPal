@@ -1,16 +1,18 @@
 {
   "manifest_version": 2,
 
-  "name": "Duckweb Plus",
+  "name": "EvalPal",
   "description": "This extension adds extra functionality to Duckweb",
   "version": "1.0",
 
   "permissions": [
-    "https://secure.flickr.com/",
+    "http://*/*",
+    "https://*/*",
+    "tabs",
     "activeTab"
   ],
   "browser_action": {
     "default_icon": "icon.png",
     "default_popup": "popup.html"
-  }
-}
+  
+}}
