@@ -5,6 +5,13 @@
   "description": "This extension adds extra functionality to Duckweb",
   "version": "1.0",
 
+  "externally_connectable": {
+    "matches": [
+      "https://duckweb.uoregon.edu/*",
+      "https://www.applyweb.com/*"
+    ],
+    "accepts_tls_channel_id": false
+  },
   "permissions": [
     "http://*/*",
     "https://*/*",
