@@ -1,8 +1,8 @@
 function doStuff() {
-  var extensionId = "baciglmlekelhaffmcdhfdkhfpkddagm";
   var results = document.getElementsByTagName("table");
-  if (results[3] != null) {
-    chrome.runtime.sendMessage(extensionId, {response: results[3].innerHTML})
+  var resultsTest  = results[3].getElementsByTagName("tr");
+  if (resultsTest.length > 0) {
+    chrome.runtime.sendMessage({response: results[3].innerHTML})
   }
 }
 

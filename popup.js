@@ -12,7 +12,7 @@ var dwp = {
             chrome.tabs.sendMessage(tab.id, {name: "154874"});
               setTimeout(function() {
               chrome.tabs.executeScript(tab.id, {file: 'injectEvalStage3.js'});
-            }, 10000);
+            }, 4000);
           }, 3000);
         }, 3000);   // end 3rd timeout
       }, 3000);   // end 2nd timeout
