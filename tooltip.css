@@ -3,12 +3,28 @@
     border: 2px solid white;
   }
   .ui-tooltip {
-    padding: 10px 20px;
+  padding: 10px 20px;
     color: #000;
     border-radius: 5px;
     font: 12px "Arial", Sans-Serif;
-    box-shadow: 0 0 7px black;
+    box-shadow: 0 0 2px black;
   }
+  
+  .ui-tooltip a.x {
+	position: absolute;
+	top:0;
+	right:0;
+  	width: 14px;
+  	height: 14px;
+  	background: url('http://i57.tinypic.com/2qa8y8m.jpg') no-repeat top center;
+  	display: block;
+  }
+  
+  .ui-tooltip a.x:hover {
+  	background-position: bottom center;
+
+  }
+  
   .arrow {
     width: 70px;
     height: 16px;
@@ -17,6 +33,7 @@
     left: 50%;
     margin-left: -35px;
     bottom: -16px;
+    box-shadow: 6px 5px 9px -9px black;
   }
   .arrow.top {
     top: -16px;
