@@ -3,10 +3,23 @@
 
 // Edit contents of main table on duckweb class lookup page
 
+function getProfLink(name, idx) {
+	var res = name.split("(");
+	var prof = res[0].trim();
+	alert(prof);
+	if (prof == "TBA" || prof == "STAFF" || prof == "")
+		return name;
+	return "<a class='eval' id='" + idx + "' href='javascript:void(0)'>" + name + "</a>";
+}
+
+
+
+
 $(function() {
 var table = document.getElementsByTagName("tbody"); 
 var rows = table[5].getElementsByTagName("tr"); 
 var count;
+var idx = 0;
 var course, number, prof;
 
 for (var i = 3; i < rows.length; i++) {
@@ -18,13 +31,16 @@ for (var i = 3; i < rows.length; i++) {
 		
 		if (count == 3) {
 			course = cells[j].innerHTML;
-    		cells[j].innerHTML = "<a class='eval' href='javascript:void(0)'>" + course + "</a>";
+    		cells[j].innerHTML = "<a class='eval' id='" + idx + "' href='javascript:void(0)'>" + course + "</a>";
+    		idx++;
 		} else if (count == 4) {
 			number = cells[j].innerHTML;
-			cells[j].innerHTML = "<a class='eval' href='javascript:void(0)'>" + number + "</a>";
+			cells[j].innerHTML = "<a class='eval' id='" + idx + "' href='javascript:void(0)'>" + number + "</a>";
+			idx++;
 		} else if (count == 11) {
-			prof = cells[j].innerHTML; 
-			cells[j].innerHTML = "<a class='eval' href='javascript:void(0)'>" + prof + "</a>";
+			prof = cells[j].innerText; 
+			cells[j].innerHTML = getProfLink(prof, idx);
+			idx++;
 		}
 	}
 }
@@ -36,7 +52,8 @@ $('a.eval').css({"background-color": "#f4f199"});
         $(this).tooltip({
             items: '.eval.on',
 			content: function() {
-                return 'content will go here'
+				var x = "<a href='javascript:void(0);' id ='x " + $(this).attr("id") +"' class='x'></a>";
+                return x + 'content will go here'
             },
 			position: {
         		my: "center bottom-20",
@@ -51,17 +68,23 @@ $('a.eval').css({"background-color": "#f4f199"});
         		}
       		}
         });
-        $(this).trigger('mouseenter');
+        $(this).tooltip('open');
     });
     //hide
-    $(document).on('click', '.eval.on', function () {
-        $(this).tooltip('close');
-        $(this).removeClass("on");
-    });
+    
+    	$(document).on('click', '.x', function () {
+        	res = $(this).attr("id").split(" ");
+        	var id = res[1];
+        	$("#" + id).tooltip("close");
+        	$("#" + id).removeClass("on");
+    	}); 
+    	
     //prevent mouseout and other related events from firing their handlers
     $(".eval").on('mouseout', function (e) {
         e.stopImmediatePropagation();
     });
-
+    $(".eval").on('mouseenter', function (e) {
+        e.stopImmediatePropagation();
+    });
 
 });
