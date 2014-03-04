@@ -6,7 +6,6 @@
 function getProfLink(name, idx) {
 	var res = name.split("(");
 	var prof = res[0].trim();
-	alert(prof);
 	if (prof == "TBA" || prof == "STAFF" || prof == "")
 		return name;
 	return "<a class='eval' id='" + idx + "' href='javascript:void(0)'>" + name + "</a>";
