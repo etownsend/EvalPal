@@ -1,3 +1,5 @@
+var list = "blah";
+
 function doStuff() {
   var results = document.getElementsByTagName("table");
   var resultsTest  = results[3].getElementsByTagName("tr");
@@ -6,8 +8,24 @@ function doStuff() {
   }
 }
 
+
+function getInstructorsList() {
+	var res = [];
+	var sel = document.getElementsByName("instructorSelect")[0];
+	for (var i = 0; i< sel.length; i++) {
+		res.push(sel.options[i].text);
+	}
+	return res;
+}
+
+
+var port = chrome.runtime.connect({name: "knockknock"});
+port.postMessage({profs: getInstructorsList()});
+port.onMessage.addListener(function(msg) {
+});
+
 // Setting up message passing
-chrome.runtime.onMessage.addListener(
+/*chrome.runtime.onMessage.addListener(
   function(message, sender, sendResponse) {
     // Setting Instructor
     var instructorSelect = document.getElementsByName("instructorSelect")[0];
@@ -18,7 +36,7 @@ chrome.runtime.onMessage.addListener(
       instructorSelect.dispatchEvent(evt);
     }
     else instructorSelect.fireEvent("onchange");
-});
+});*/
 
 // Triggering stuff if page already has been loaded
 if(document.readyState == "complete" || document.readyState == "loaded") {

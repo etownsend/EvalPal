@@ -20,11 +20,12 @@ var dwp = {
   },
 
   initializePages: function () {
-    chrome.runtime.onMessage.addListener(
+  
+    /*chrome.runtime.onMessage.addListener(
       function(message, sender, sendResponse) {
-        alert(message.response);
+        //document.getElementById('test').innerHTML = message.response;
         //chrome.tabs.executeScript({string: message.response});
-    });
+    });*/
 
     var urlVar = "https://duckweb.uoregon.edu/pls/prod/hwskwbis.P_CourseEvaluations";
     chrome.tabs.create({url: urlVar, active: false}, dwp.navigateEval);
@@ -32,7 +33,18 @@ var dwp = {
     //this was added by sarah
     chrome.tabs.executeScript({ file: "jquery.js" }, function() {
       chrome.tabs.executeScript({ file: "jquery-ui.js" }, function() {
-        chrome.tabs.executeScript({ file: "injectRegistration.js" });
+      	chrome.tabs.executeScript({ file: "fuse.min.js" }, function() {
+			chrome.runtime.onConnect.addListener(function(port) {
+  				console.assert(port.name == "knockknock");
+  				port.onMessage.addListener(function(msg) {
+    				if (msg.profs != "") {
+    					chrome.tabs.executeScript({ code: 'var profList = ' + JSON.stringify(msg.profs) }, function() {
+    						chrome.tabs.executeScript({ file: "injectRegistration.js" });
+    					});
+    				}
+  				});
+			});
+    	});
       });
     });
     chrome.tabs.insertCSS({ file: 'jquery-ui.css' }, function() {

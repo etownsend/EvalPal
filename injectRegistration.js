@@ -3,6 +3,8 @@
 
 // Edit contents of main table on duckweb class lookup page
 
+//profList if the variable which holds the list of professors!
+
 function getProfLink(name, idx) {
 	var res = name.split("(");
 	var prof = res[0].trim();
@@ -11,8 +13,26 @@ function getProfLink(name, idx) {
 	return "<a class='eval' id='" + idx + "' href='javascript:void(0)'>" + name + "</a>";
 }
 
+function getProfName(idx) {
+	var res = $("#" + idx).text().split("(");
+	return res[0].trim();
+}
 
+function fuzzySearchProfs(searchVal) {
+		 var options = {
+				keys: ['author'],
+				caseSensitive: false
+			};
 
+		var f = new Fuse(profList, options);
+		var result = f.search(searchVal);
+		var str = ""
+		$.each(result, function(idx, val) {
+		 	str += profList[val] + "<br />";
+		 });
+		 return str;
+
+}
 
 $(function() {
 var table = document.getElementsByTagName("tbody"); 
@@ -52,7 +72,7 @@ $('a.eval').css({"background-color": "#f4f199"});
             items: '.eval.on',
 			content: function() {
 				var x = "<a href='javascript:void(0);' id ='x " + $(this).attr("id") +"' class='x'></a>";
-                return x + 'content will go here'
+                return x + fuzzySearchProfs(getProfName($(this).attr("id")));
             },
 			position: {
         		my: "center bottom-20",
