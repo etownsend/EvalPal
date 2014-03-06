@@ -14,7 +14,7 @@ chrome.runtime.onMessage.addListener(
 	console.log(message.response)
 	console.log(lastToolTipId);
 	$("#" + lastToolTipId).tooltip('close');
-	$("#" + lastToolTipId).tooltip({content: message.response});
+	$("#" + lastToolTipId).tooltip({content: "<a href='javascript:void(0);' id ='x " + lastToolTipId +"' class='x'></a>" + message.response});
 	$("#" + lastToolTipId).tooltip('open');
 });
 
@@ -70,7 +70,7 @@ $('a.eval').css({"background-color": "#f4f199"});
 			items: '.eval.on',
 			content: function() {
 				var x = "<a href='javascript:void(0);' id ='x " + $(this).attr("id") +"' class='x'></a>";
-				return x + 'content will go here'
+				return x + '<img src="http://i61.tinypic.com/2emoq3r.gif" alt="loading..." />';
 			},
 			position: {
 				my: "center bottom-20",
