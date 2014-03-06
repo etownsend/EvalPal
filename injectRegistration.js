@@ -3,6 +3,22 @@
 
 // Edit contents of main table on duckweb class lookup page
 
+// Keeps track of the most recently opened tooltip so it can
+// be edited
+var lastToolTipId;
+
+chrome.runtime.onMessage.addListener(
+  function(message, sender, sendResponse) {
+  	// message.response contains the html for the table.
+  	// Need to change tooltip
+	console.log(message.response)
+	console.log(lastToolTipId);
+	$("#" + lastToolTipId).tooltip('close');
+	$("#" + lastToolTipId).tooltip({content: message.response});
+	$("#" + lastToolTipId).tooltip('open');
+});
+
+
 function getProfLink(name, idx) {
 	var res = name.split("(");
 	var prof = res[0].trim();
@@ -30,8 +46,8 @@ for (var i = 3; i < rows.length; i++) {
 		
 		if (count == 3) {
 			course = cells[j].innerHTML;
-    		cells[j].innerHTML = "<a class='eval' id='" + idx + "' href='javascript:void(0)'>" + course + "</a>";
-    		idx++;
+			cells[j].innerHTML = "<a class='eval' id='" + idx + "' href='javascript:void(0)'>" + course + "</a>";
+			idx++;
 		} else if (count == 4) {
 			number = cells[j].innerHTML;
 			cells[j].innerHTML = "<a class='eval' id='" + idx + "' href='javascript:void(0)'>" + number + "</a>";
@@ -45,45 +61,49 @@ for (var i = 3; i < rows.length; i++) {
 }
 
 $('a.eval').css({"background-color": "#f4f199"});
-
-    $(document).on('click', '.eval', function () {
-        $(this).addClass("on");
-        $(this).tooltip({
-            items: '.eval.on',
+	
+	// Create tooltip
+	$(document).on('click', '.eval', function () {
+		chrome.runtime.sendMessage({name: "154874"});
+		$(this).addClass("on");
+		$(this).tooltip({
+			items: '.eval.on',
 			content: function() {
 				var x = "<a href='javascript:void(0);' id ='x " + $(this).attr("id") +"' class='x'></a>";
-                return x + 'content will go here'
-            },
+				return x + 'content will go here'
+			},
 			position: {
-        		my: "center bottom-20",
-        		at: "center top",
-        		using: function( position, feedback ) {
-          		$( this ).css( position );
-          		$( "<div>" )
-            		.addClass( "arrow" )
-            		.addClass( feedback.vertical )
-            		.addClass( feedback.horizontal )
-            		.appendTo( this );
-        		}
-      		}
-        });
-        $(this).tooltip('open');
-    });
-    //hide
-    
-    	$(document).on('click', '.x', function () {
-        	res = $(this).attr("id").split(" ");
-        	var id = res[1];
-        	$("#" + id).tooltip("close");
-        	$("#" + id).removeClass("on");
-    	}); 
-    	
-    //prevent mouseout and other related events from firing their handlers
-    $(".eval").on('mouseout', function (e) {
-        e.stopImmediatePropagation();
-    });
-    $(".eval").on('mouseenter', function (e) {
-        e.stopImmediatePropagation();
-    });
+				my: "center bottom-20",
+				at: "center top",
+				using: function( position, feedback ) {
+				$( this ).css( position );
+				$( "<div>" )
+					.addClass( "arrow" )
+					.addClass( feedback.vertical )
+					.addClass( feedback.horizontal )
+					.appendTo( this );
+				}
+			}
+		});
+		$(this).tooltip('open');
+		// Evan's hack to edit tooltip Feel free to improve
+		lastToolTipId = $(this).attr("id");
+	});
+
+	// Hide tooltip
+	$(document).on('click', '.x', function () {
+		res = $(this).attr("id").split(" ");
+		var id = res[1];
+		$("#" + id).tooltip("close");
+		$("#" + id).removeClass("on");
+	}); 
+		
+	//prevent mouseout and other related events from firing their handlers
+	$(".eval").on('mouseout', function (e) {
+		e.stopImmediatePropagation();
+	});
+	$(".eval").on('mouseenter', function (e) {
+		e.stopImmediatePropagation();
+	});
 
 });
