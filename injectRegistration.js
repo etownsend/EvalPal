@@ -8,14 +8,12 @@
 var lastToolTipId;
 
 chrome.runtime.onMessage.addListener(
-  function(message, sender, sendResponse) {
-  	// message.response contains the html for the table.
-  	// Need to change tooltip
-	console.log(message.response)
-	console.log(lastToolTipId);
-	$("#" + lastToolTipId).tooltip('close');
-	$("#" + lastToolTipId).tooltip({content: "<a href='javascript:void(0);' id ='x " + lastToolTipId +"' class='x'></a>" + message.response});
-	$("#" + lastToolTipId).tooltip('open');
+	function(message, sender, sendResponse) {
+		// message.response contains the html for the table.
+		console.log(lastToolTipId);
+		$("#" + lastToolTipId).tooltip('close');
+		$("#" + lastToolTipId).tooltip({content: "<a href='javascript:void(0);' id ='x " + lastToolTipId +"' class='x'></a>" + message.response});
+		$("#" + lastToolTipId).tooltip('open');
 });
 
 
@@ -64,7 +62,9 @@ $('a.eval').css({"background-color": "#f4f199"});
 	
 	// Create tooltip
 	$(document).on('click', '.eval', function () {
-		chrome.runtime.sendMessage({name: "154874"});
+		// Note: slicing string removes things like ' (P)' from the end of the name
+		var profName = $(this).context.innerText;
+		chrome.runtime.sendMessage({name: profName.slice(0,-4)});
 		$(this).addClass("on");
 		$(this).tooltip({
 			items: '.eval.on',
