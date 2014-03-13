@@ -3,7 +3,18 @@ var dwp = {
   evalTab:{},
   duckwebTab:{},
 
-  navigateEval: function(tab) {
+  setupRegistration: function() {
+    chrome.tabs.executeScript({ file: "jquery.js" }, function() {
+      chrome.tabs.executeScript({ file: "jquery-ui.js" }, function() {
+        chrome.tabs.executeScript({ file: "injectRegistration.js" });
+      });
+    });
+    chrome.tabs.insertCSS({ file: 'jquery-ui.css' }, function() {
+      chrome.tabs.insertCSS({ file: 'tooltip.css' });
+    });
+  },
+
+  setupEval: function(tab) {
     evalTab = tab;
     setTimeout(function () {
       chrome.tabs.executeScript(tab.id, {file: 'injectEvalStage1.js'});
@@ -11,6 +22,7 @@ var dwp = {
         chrome.tabs.executeScript(tab.id, {file: 'injectEvalStage2.js'});
         setTimeout(function () {
           chrome.tabs.executeScript(tab.id, {file: 'injectEvalStage3.js'});
+          dwp.setupRegistration()
         }, 3000);   // end 3rd timeout
       }, 3000);   // end 2nd timeout
     }, 3000);   // End 1st timeout
@@ -25,7 +37,7 @@ var dwp = {
 
     // Open the eval tab
     var urlVar = "https://duckweb.uoregon.edu/pls/prod/hwskwbis.P_CourseEvaluations";
-    chrome.tabs.create({url: urlVar, active: false}, dwp.navigateEval);
+    chrome.tabs.create({url: urlVar, active: false}, dwp.setupEval);
 
     // Setting up message handling
     chrome.runtime.onMessage.addListener(
@@ -41,17 +53,6 @@ var dwp = {
           chrome.tabs.sendMessage(duckwebTab.id, {response: message.response});
         } else {alert(message.toSource())};
     });
-    
-    //this was added by sarah
-    chrome.tabs.executeScript({ file: "jquery.js" }, function() {
-      chrome.tabs.executeScript({ file: "jquery-ui.js" }, function() {
-        chrome.tabs.executeScript({ file: "injectRegistration.js" });
-      });
-    });
-    chrome.tabs.insertCSS({ file: 'jquery-ui.css' }, function() {
-      chrome.tabs.insertCSS({ file: 'tooltip.css' });
-    });
-    
     //window.close();
   }
 };
