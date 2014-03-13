@@ -3,6 +3,7 @@ function returnResults() {
   var results = document.getElementsByTagName("table");
   var resultsTest  = results[3].getElementsByTagName("tr");
   if (resultsTest.length > 0) {
+    // Return Found Results
     chrome.runtime.sendMessage({response: results[3].innerHTML})
   }
 };

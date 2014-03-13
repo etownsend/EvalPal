@@ -5,15 +5,28 @@
 
 // Keeps track of the most recently opened tooltip so it can
 // be edited
-var lastToolTipId;
+var messageOut = false;
+var toolTipQueue = [];
+var messageQueue = [];
 
+
+// Recieves Messages, manages message queues, and prompts page updates.
 chrome.runtime.onMessage.addListener(
 	function(message, sender, sendResponse) {
-		// message.response contains the html for the table.
+		messageOut = false;
+		// Update Tooltip with contents from message
+		var lastToolTipId = toolTipQueue.shift();
 		console.log(lastToolTipId);
 		$("#" + lastToolTipId).tooltip('close');
 		$("#" + lastToolTipId).tooltip({content: "<a href='javascript:void(0);' id ='x " + lastToolTipId +"' class='x'></a>" + message.response});
 		$("#" + lastToolTipId).tooltip('open');
+
+		// Send next queued message
+		if(messageQueue.length > 0) {
+			messageOut = true;
+			console.log("Sending Queued Message");
+			chrome.runtime.sendMessage(messageQueue.shift());
+		}
 });
 
 
@@ -24,7 +37,6 @@ function getProfLink(name, idx) {
 		return name;
 	return "<a class='eval' id='" + idx + "' href='javascript:void(0)'>" + name + "</a>";
 }
-
 
 
 
@@ -58,13 +70,26 @@ for (var i = 3; i < rows.length; i++) {
 	}
 }
 
+// Creates tooltip. Prompts actions for items on page when clicked
 $('a.eval').css({"background-color": "#f4f199"});
 	
 	// Create tooltip
 	$(document).on('click', '.eval', function () {
+		// Sending message
 		// Note: slicing string removes things like ' (P)' from the end of the name
-		var profName = $(this).context.innerText;
-		chrome.runtime.sendMessage({name: profName.slice(0,-4)});
+		var profMsg = {name: $(this).context.innerText.slice(0,-4)};
+		if (messageOut) {
+			// Cache message to be sent later
+			messageQueue.push(profMsg)
+			console.log("Caching Message: " + profMsg.name);
+		} else {
+			// Send message
+			messageOut = true;
+			chrome.runtime.sendMessage(profMsg);
+			console.log("Sending Message: " + profMsg.name);
+		}
+
+		// Constructing tooltip
 		$(this).addClass("on");
 		$(this).tooltip({
 			items: '.eval.on',
@@ -86,8 +111,9 @@ $('a.eval').css({"background-color": "#f4f199"});
 			}
 		});
 		$(this).tooltip('open');
-		// Evan's hack to edit tooltip Feel free to improve
-		lastToolTipId = $(this).attr("id");
+		
+		// Add tooltip to queue so it can be edited when message returns
+		toolTipQueue.push($(this).attr("id"));
 	});
 
 	// Hide tooltip
