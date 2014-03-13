@@ -4,9 +4,10 @@
 	"name": "EvalPal",
 	"description": "This extension adds extra functionality to Duckweb",
 	"version": "1.0",
-	"icons": { "16": "icon16.png",
-           "48": "icon48.png",
-          "128": "icon128.png" },
+	"icons": { "16": "images/icon16.png",
+           "48": "images/icon48.png",
+          "128": "images/icon128.png" },
+	"web_accessible_resources": ["images/loading2.gif", "images/x.jpg"],
 
 	"externally_connectable": {
 		"matches": [
@@ -24,8 +25,11 @@
 	"background":{
 		"scripts": ["background.js"]
 	},
+
+  
 	"page_action": {
-		"default_icon": "icon48.png",
+		"default_icon": "images/icon48.png",
 		"default_popup": "popup.html"
 	}
+
 }

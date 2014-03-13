@@ -4,8 +4,10 @@
 		<title>Eval Pal : Popup</title>
 		<style>
 			body {
-				min-width: 357px;
+				min-width: 300px;
 				overflow-x: hidden;
+				text-align: center;
+				font: 13px "Georgia", Arial, Sans-serif;
 			}
 
 			img {
@@ -15,6 +17,25 @@
 				width: 75px;
 				height: 75px;
 			}
+			#logo {
+				background: url("images/evalpalLogo2.png");
+				width: 300px;
+				height: 85px;
+				display: block;
+			}
+			#enable {
+				display: block;
+				width: 90%;
+				border: 1px solid #cccccc;
+				margin: 0px 6px;
+				font-size: 16px;
+				color: #137b1b;
+				padding: 10px 10px;
+				text-align: left;
+			}
+			#enable:hover {
+				cursor: pointer;
+			}
 		</style>
 
 		<!--
@@ -23,11 +44,11 @@
 			-
 			- [1]: http://developer.chrome.com/extensions/contentSecurityPolicy.html
 		 -->
-		<script src="popup.js"></script>
+		<script src="popup.js"></script>		
 	</head>
 	<body>
-		<center>
-			<h3>Eval Pal</h3>
+		<div id="logo"></div><br />
+		<span id="enable">Enabled for Duckweb</span>
 			<p>Written By: Evan Townsend and Sarah Yablok</p>
 			<p>
 				With Assistance From:<br>
@@ -35,7 +56,5 @@
 				Abdulrahman Alkhelaifi<br>
 				Braden Hollembaek
 			</p>
-
-		</center>
 	</body>
 </html>

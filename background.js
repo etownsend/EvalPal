@@ -1,18 +1,19 @@
+var en = true;
+
 // Injects javascript into the tab and then closes the popup
 var dwp = {
 	evalTab:{},
 	duckwebTab:{},
 
 	setupRegistration: function() {
-		console.log("setting up registration");
-		chrome.tabs.executeScript({ file: "jquery.js" }, function() {
-			chrome.tabs.executeScript({ file: "jquery-ui.js" }, function() {
-				chrome.tabs.executeScript({ file: "injectRegistration.js" });
+			chrome.tabs.executeScript({ file: "jquery.js" }, function() {
+				chrome.tabs.executeScript({ file: "jquery-ui.js" }, function() {
+					chrome.tabs.executeScript({ file: "injectRegistration.js" });
+				});
 			});
-		});
-		chrome.tabs.insertCSS({ file: 'jquery-ui.css' }, function() {
-			chrome.tabs.insertCSS({ file: 'tooltip.css' });
-		});
+			chrome.tabs.insertCSS({ file: 'jquery-ui.css' }, function() {
+				chrome.tabs.insertCSS({ file: 'tooltip.css' });
+			});
 	},
 
 	setupEval: function(tab) {
@@ -101,7 +102,7 @@ console.log(chrome.tabs.query( {currentWindow: true, active: true}, function(tab
 	// Checks the current Page
 	var a = handleInit(tabs[0].id, {status: "complete"}, tabs[0]);
 	// Otherwise, sets an event listener;
-	if (!a) {
+	if (!a && en) {
 		chrome.tabs.onUpdated.addListener(handleInit);
 	}
 }));

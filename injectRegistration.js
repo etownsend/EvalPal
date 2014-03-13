@@ -180,7 +180,7 @@ chrome.runtime.onMessage.addListener(
 			if (typeof attr == 'undefined' || attr == false)
 				$("#" + lastToolTipId).tooltip({content: "<a href='javascript:void(0);' id ='x " + lastToolTipId +"' class='x'></a>" + formatAverages(message.response)});
 			else 
-				$("#" + lastToolTipId).tooltip({content: "<a href='javascript:void(0);' id ='x " + lastToolTipId +"' class='x'></a>" + formatAveragesCourses(message.response, lastToolTipId)});
+				$("#" + lastToolTipId).tooltip({content: "<a href='javascript:void(0);' id ='x " + lastToolTipId +"' class='x'></a>" + formatAveragesCourses(message.response, $("#" + lastToolTipId).attr("title"))});
 
 			$("#" + lastToolTipId).tooltip('open');
 		}
@@ -222,10 +222,10 @@ function formatAverages(av) {
 }
 
 
-function formatAveragesCourses(av, id) {
+function formatAveragesCourses(av, n) {
 	if (av == "No results found")
 		return "No results found";
-	var str = "<h3>Course Evaluations For " + $("#" + id).attr("title") + " " + av[av.length-1] + "</h3><br /><table>";
+	var str = "<h3>Course Evaluations For " + n + "</h3><br /><table>";
 	str += "<tr><td class='right'><b>Quality of this course:</b></td>";
 	str += "<td><span class='gray-bar'> <span class='rating' style='width:" + Math.round(100*(av[0]/5.0)) + "%;'></span></span>" + av[0] + " out of 5</td></tr>";
 	str += "<tr><td class='right'><b>Quality of Teaching:</b> ";
@@ -285,7 +285,7 @@ $(document).ready(function() {
 			} else if (count == 4) {
 				number = cells[j].innerHTML;
 				if (cells[j].innerText.trim() != "")
-					cells[j].innerHTML = "<a class='eval' title='" + course + "' id='" + idx + "' href='javascript:void(0)'>" + number + "</a>";
+					cells[j].innerHTML = "<a class='eval' title='" + course + " " + number + "' id='" + idx + "' href='javascript:void(0)'>" + number + "</a>";
 				idx++;
 			} else if (count == 11) {
 				prof = cells[j].innerText; 
@@ -324,7 +324,7 @@ $(document).ready(function() {
 			items: '.eval.on',
 			content: function() {
 				var x = "<a href='javascript:void(0);' id ='x " + $(this).attr("id") +"' class='x'></a>";
-				return x + '<img src="http://i61.tinypic.com/2emoq3r.gif" alt="loading..." />';
+				return x + '<img src="' + chrome.extension.getURL('images/loading2.gif') + '" alt="loading..." />';
 			},
 			position: {
 				my: "center bottom-20",

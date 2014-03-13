@@ -1,8 +1,9 @@
-// Registers event listeners to buttons on page load
-document.addEventListener('DOMContentLoaded', function () {
-	var button = document.getElementById("lookupButton");
+var background = chrome.extension.getBackgroundPage();
+
+chrome.pageAction.onClicked.addListener('DOMContentLoaded', function () {
+	var button = document.getElementById("enable");
 	button.addEventListener('click', function() {
-		chrome.extension.getBackgroundPage().dwp.initializePages();
-		window.close();
+		document.getElementById("enable").innerHTML = "Disable";
+		background.en = false;
 	}, false);
 }, false);
