@@ -6,13 +6,13 @@ var dwp = {
 	duckwebTab:{},
 
 	setupRegistration: function() {
-			chrome.tabs.executeScript({ file: "jquery.js" }, function() {
-				chrome.tabs.executeScript({ file: "jquery-ui.js" }, function() {
+			chrome.tabs.executeScript({ file: "utils/jquery.js" }, function() {
+				chrome.tabs.executeScript({ file: "utils/jquery-ui.js" }, function() {
 					chrome.tabs.executeScript({ file: "injectRegistration.js" });
 				});
 			});
-			chrome.tabs.insertCSS({ file: 'jquery-ui.css' }, function() {
-				chrome.tabs.insertCSS({ file: 'tooltip.css' });
+			chrome.tabs.insertCSS({ file: 'utils/jquery-ui.css' }, function() {
+				chrome.tabs.insertCSS({ file: 'utils/tooltip.css' });
 			});
 	},
 
