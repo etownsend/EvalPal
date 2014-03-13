@@ -303,7 +303,6 @@ $(document).ready(function() {
 		// Detecting if is class number or professor name
 
 		// Note: slicing string removes things like ' (P)' from the end of the name
-		var course = $(this).attr("title");
 		var msg = $(this).context.innerText;
 		if(isNaN(msg)){
 			// Message is a Professor's Name
@@ -312,7 +311,7 @@ $(document).ready(function() {
 		}	else {
 			// Message is a class number
 
-			var classMsg1 = {request: true, subject: dept[course]};
+			var classMsg1 = {request: true, subject: dept[$(this).attr("title").split(" ")[0]]};
 			var classMsg2 = {request: true, number: msg};
 			sendMessage(classMsg1);
 			sendMessage(classMsg2);
