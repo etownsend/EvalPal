@@ -14,13 +14,17 @@ var messageQueue = [];
 chrome.runtime.onMessage.addListener(
 	function(message, sender, sendResponse) {
 		messageOut = false;
-		// Update Tooltip with contents from message
-		var lastToolTipId = toolTipQueue.shift();
-		console.log(lastToolTipId);
-		$("#" + lastToolTipId).tooltip('close');
-		$("#" + lastToolTipId).tooltip({content: "<a href='javascript:void(0);' id ='x " + lastToolTipId +"' class='x'></a>" + formatAverages(message.response)});
-		$("#" + lastToolTipId).tooltip('open');
-
+		// Distinguish ack from response
+		if(message.response === "ack") {
+			// Do nothing
+		} else {
+			// Update Tooltip with contents from message
+			var lastToolTipId = toolTipQueue.shift();
+			console.log(lastToolTipId);
+			$("#" + lastToolTipId).tooltip('close');
+			$("#" + lastToolTipId).tooltip({content: "<a href='javascript:void(0);' id ='x " + lastToolTipId +"' class='x'></a>" + formatAverages(message.response)});
+			$("#" + lastToolTipId).tooltip('open');
+		}
 		// Send next queued message
 		if(messageQueue.length > 0) {
 			messageOut = true;
@@ -67,7 +71,18 @@ function getProfLink(name, idx) {
 	return "<a class='eval' id='" + idx + "' href='javascript:void(0)'>" + name + "</a>";
 }
 
-
+// Smoothly uses the messaging system to send a message to the eval page
+function sendMessage(message) {
+	// If the messaging system is busy
+	if (messageOut) {
+		// Cache message to be sent later
+		messageQueue.push(message)
+	} else {
+		// Otherwise send message
+		messageOut = true;
+		chrome.runtime.sendMessage(message);
+	}
+}
 
 $(function() {
 	var table = document.getElementsByTagName("tbody"); 
@@ -104,18 +119,21 @@ $(function() {
 		
 	// Create tooltip
 	$(document).on('click', '.eval', function () {
-		// Sending message
+		// Detecting if is class number or professor name
+
 		// Note: slicing string removes things like ' (P)' from the end of the name
-		var profMsg = {name: $(this).context.innerText.slice(0,-4)};
-		if (messageOut) {
-			// Cache message to be sent later
-			messageQueue.push(profMsg)
-			console.log("Caching Message: " + profMsg.name);
-		} else {
-			// Send message
-			messageOut = true;
-			chrome.runtime.sendMessage(profMsg);
-			console.log("Sending Message: " + profMsg.name);
+		var msg = $(this).context.innerText;
+		console.log("Sending Message "+msg)
+		if(isNaN(msg)){
+			// Message is a Professor's Name
+			var profMsg = {request: true, name: msg.slice(0,-4)};
+			sendMessage(profMsg);
+		}	else {
+			// Message is a class number
+			var classMsg1 = {request: true, subject: "Computer & Information Science"};
+			var classMsg2 = {request: true, number: msg};
+			sendMessage(classMsg1);
+			sendMessage(classMsg2);
 		}
 
 		// Constructing tooltip
