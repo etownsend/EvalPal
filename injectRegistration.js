@@ -173,11 +173,6 @@ chrome.runtime.onMessage.addListener(
 		} else {
 			// Update Tooltip with contents from message
 			var lastToolTipId = toolTipQueue.shift();
-<<<<<<< HEAD
-			//console.log(lastToolTipId);
-=======
-			console.log(lastToolTipId);
->>>>>>> FETCH_HEAD
 			$("#" + lastToolTipId).tooltip('close');
 			$("#" + lastToolTipId).tooltip({content: "<a href='javascript:void(0);' id ='x " + lastToolTipId +"' class='x'></a>" + formatAverages(message.response)});
 			$("#" + lastToolTipId).tooltip('open');
@@ -241,11 +236,7 @@ function sendMessage(message) {
 	}
 }
 
-<<<<<<< HEAD
 $(document).ready(function() {
-=======
-$(function() {
->>>>>>> FETCH_HEAD
 	var table = document.getElementsByTagName("tbody"); 
 	var rows = table[5].getElementsByTagName("tr"); 
 	var count;
@@ -281,14 +272,11 @@ $(function() {
 		// Detecting if is class number or professor name
 
 		// Note: slicing string removes things like ' (P)' from the end of the name
-<<<<<<< HEAD
 		var course = $(this).attr("title");
 		console.log(course);
 		var msg = $(this).context.innerText;
 		console.log(msg);
-=======
 		var msg = $(this).context.innerText;
->>>>>>> FETCH_HEAD
 		console.log("Sending Message "+msg)
 		if(isNaN(msg)){
 			// Message is a Professor's Name
@@ -296,11 +284,8 @@ $(function() {
 			sendMessage(profMsg);
 		}	else {
 			// Message is a class number
-<<<<<<< HEAD
+
 			var classMsg1 = {request: true, subject: dept[course]};
-=======
-			var classMsg1 = {request: true, subject: dept["CIS"]};
->>>>>>> FETCH_HEAD
 			var classMsg2 = {request: true, number: msg};
 			sendMessage(classMsg1);
 			sendMessage(classMsg2);
