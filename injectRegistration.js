@@ -33,14 +33,28 @@ chrome.runtime.onMessage.addListener(
 function formatAverages(av) {
 	if (av == "No results found")
 		return "No results found";
-	var str = "<h3>Instructor Evaluations For " + av[av.length-1] + "</h3><br />";
-	str += "<b>Quality of Courses Taught by this Professor:</b> " + av[0];
-	str += "<br /><b>Quality of Teaching:</b> " + av[1];
-	str += "<br /><b>Professor's Organization:</b> " + av[2];
-	str += "<br /><b>Use of Class Time:</b> " + av[3];
-	str += "<br /><b>Availability Outside of Class:</b> " + av[4];
-	str += "<br /><b>Clarity of Evaluation Guidelines:</b> " + av[5];
-	str += "<br /><b>Amount Learned in Courses Taught by this Professor:</b> " + av[6];
+	var str = "<h3>Instructor Evaluations For " + av[av.length-1] + "</h3><br /><table>";
+	str += "<tr><td class='right'><b>Quality of Courses Taught by this Professor:</b></td>";
+	str += "<td><span class='gray-bar'> <span class='rating' style='width:" + Math.round(100*(av[0]/5.0)) + "%;'></span></span>" + av[0] + " out of 5</td></tr>";
+	str += "<tr><td class='right'><b>Quality of Teaching:</b> ";
+	str += "<td><span class='gray-bar'> <span class='rating' style='width:" + Math.round(100*(av[1]/5.0)) + "%;'></span></span>" + av[1] + " out of 5</td></tr>";
+
+	str += "<tr><td class='right'><b>Professor's Organization:</b> ";
+	str += "<td><span class='gray-bar'> <span class='rating' style='width:" + Math.round(100*(av[2]/5.0)) + "%;'></span></span>" + av[2] + " out of 5</td></tr>";
+
+
+	str += "<tr><td class='right'><b>Use of Class Time:</b> ";
+	str += "<td><span class='gray-bar'> <span class='rating' style='width:" + Math.round(100*(av[3]/5.0)) + "%;'></span></span>" + av[3] + " out of 5</td></tr>";
+
+	str += "<tr><td class='right'><b>Availability Outside of Class:</b> ";
+	str += "<td><span class='gray-bar'> <span class='rating' style='width:" + Math.round(100*(av[4]/5.0)) + "%;'></span></span>" + av[4] + " out of 5</td></tr>";
+
+	str += "<tr><td class='right'><b>Clarity of Evaluation Guidelines:</b> ";
+	str += "<td><span class='gray-bar'> <span class='rating' style='width:" + Math.round(100*(av[5]/5.0)) + "%;'></span></span>" + av[5] + " out of 5</td></tr>";
+
+	str += "<tr><td style='border-bottom:none;' class='right'><b>Amount Learned in Courses Taught by this Professor:</b> ";
+	str += "<td style='border-bottom:none;'><span class='gray-bar'> <span class='rating' style='width:" + Math.round(100*(av[6]/5.0)) + "%;'></span></span>" + av[6] + " out of 5</td></tr>";
+
 	return str;
 }
 

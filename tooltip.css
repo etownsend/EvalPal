@@ -11,9 +11,44 @@
     max-width: 700px;
   }
   
+  .ui-tooltip table {
+    font: 10px "Arial", Sans-Serif;
+    text-align: center;
+    border-collapse: collapse;
+  }
+  
+  
+  .ui-tooltip table td {
+    border-bottom: 1px solid #d8d8d8;
+  }
+  
+  .ui-tooltip .right {
+    padding-right: 20px;
+    padding-bottom: 10px;
+    padding-top: 10px;
+    text-align: left;
+    font-size: 12px;
+  }
+  
+  .ui-tooltip .gray-bar {
+  	display: block;
+  	width: 80px;
+  	height: 7px;
+  	background: #a8a8a8;
+  	margin-bottom: 3px;
+  	margin-top: 10px;
+  }
+  
+  
+  .ui-tooltip .rating {
+    display: block;
+    height: 7px;
+    background: #25a750;
+}
+  
   .ui-tooltip h3 {
-  	color: #669966;
   	margin: 0px;
+  	font: 17px "Georgia", Arial, Sans-serif;
   }
   
   .ui-tooltip a.x {
