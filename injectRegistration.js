@@ -34,7 +34,7 @@ function formatAverages(av) {
 	if (av == "No results found")
 		return "No results found";
 	var str = "<h3>Instructor Evaluations For " + av[av.length-1] + "</h3><br />";
-	str += "<b>Quality of Courses Taught this Professor:</b> " + av[0];
+	str += "<b>Quality of Courses Taught by this Professor:</b> " + av[0];
 	str += "<br /><b>Quality of Teaching:</b> " + av[1];
 	str += "<br /><b>Professor's Organization:</b> " + av[2];
 	str += "<br /><b>Use of Class Time:</b> " + av[3];
