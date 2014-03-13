@@ -1,16 +1,29 @@
 // Checks for results data. If present, returns it to the extension.
 function returnResults() {
-	var results = document.getElementsByTagName("table");
-	var resultsTest  = results[3].getElementsByTagName("tr");
-	if (resultsTest.length > 0) {
-		chrome.runtime.sendMessage({response: getAverages()})
+	// Acknowledge Half completed course request
+	var subjectSelect = document.getElementsByName("subjectSelect")[0];
+	var numberSelect = document.getElementsByName("numberSelect")[0];
+	if(
+			(subjectSelect.value != "select subject") &&
+			(numberSelect.value == "select course #")) {
+		chrome.runtime.sendMessage({request: false, response: "ack"})
 	} else {
-		chrome.runtime.sendMessage({response: "No results found"})
+		// Return results from Query
+		var results = document.getElementsByTagName("table");
+		var resultsTestProf  = results[3].getElementsByTagName("tr");
+		var resultsTestClass = results[2].getElementsByTagName("tr");
+		if (resultsTestProf.length > 0) {
+			chrome.runtime.sendMessage({request: false, response: getAverages(resultsTestProf)})
+		} else if (resultsTestClass.length > 0) {
+			chrome.runtime.sendMessage({request: false, response: getAverages(resultsTestProf)})
+		} else {
+			chrome.runtime.sendMessage({request: false, response: "No results found"})
+		}
 	}
 };
 
 
-function getAverages() {
+function getAverages(rows) {
 	var table = document.getElementsByTagName("table");
 	var rows = table[3].getElementsByTagName("tr");
 	//console.log(table[3].innerHTML);
@@ -104,17 +117,35 @@ function getInstructorId(instructorSelect, name) {
 // Setting up message passing
 chrome.runtime.onMessage.addListener(
 	function(message, sender, sendResponse) {
-		console.log("got message");
+		console.log(message);
+
 		// Setting Instructor
-		var instructorSelect = document.getElementsByName("instructorSelect")[0];
-		instructorSelect.value = getInstructorId(instructorSelect, message.name);
-		
-		if ("createEvent" in document) {
+		if(message.name != null) {
+			var instructorSelect = document.getElementsByName("instructorSelect")[0];
+			instructorSelect.value = getInstructorId(instructorSelect, message.name);
 			var evt = document.createEvent("HTMLEvents");
 			evt.initEvent("change", false, true);
 			instructorSelect.dispatchEvent(evt);
 		}
-		else instructorSelect.fireEvent("onchange");
+
+		// Setting Subject
+		if(message.subject != null) {
+			var subjectSelect = document.getElementsByName("subjectSelect")[0];
+			subjectSelect.value = message.subject;
+			var evt = document.createEvent("HTMLEvents");
+			evt.initEvent("change", false, true);
+			subjectSelect.dispatchEvent(evt);
+		}
+
+		// Setting Course Number
+		if(message.number != null) {
+			console.log(message.number);
+			var numberSelect = document.getElementsByName("numberSelect")[0];
+			numberSelect.value = message.number;
+			var evt = document.createEvent("HTMLEvents");
+			evt.initEvent("change", false, true);
+			numberSelect.dispatchEvent(evt);
+		}
 });
 
 // Triggering stuff if page already has been loaded
@@ -124,3 +155,14 @@ if(document.readyState == "complete" || document.readyState == "loaded") {
 	// Triggering stuff for when the page loads
 	document.addEventListener('DOMContentLoaded', returnResults);
 }
+
+/*
+var subjectSelect = document.getElementsByName("subjectSelect")[0];
+var numberSelect = document.getElementsByName("numberSelect")[0];
+subjectSelect.value = "Computer & Information Science";
+numberSelect.value = "111";
+var evt = document.createEvent("HTMLEvents");
+evt.initEvent("change", false, true);
+numberSelect.dispatchEvent(evt);
+
+*/

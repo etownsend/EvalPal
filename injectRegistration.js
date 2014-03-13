@@ -9,18 +9,175 @@ var messageOut = false;
 var toolTipQueue = [];
 var messageQueue = [];
 
+// Hash table of the University's various departments and their
+// Abbreviations
+var dept = {};
+dept['AA'] = "Allied Arts";
+dept['AAA'] = "Architecture & Allied Arts";
+dept['AAAP'] = "Historic Preservation";
+dept['AAD'] = "Arts & Administration";
+dept['ACTG'] = "Accounting";
+dept['AEIS'] = "Acad Eng for Intl Stu";
+dept['AFR'] = "African Studies";
+dept['AIM'] = "Applied Information Management";
+dept['ANTH'] = "Anthropology";
+dept['ARB'] = "Arabic";
+dept['ARCH'] = "Architecture";
+dept['ARH'] = "Art History";
+dept['ART'] = "Art";
+dept['ARTC'] = "Ceramics";
+dept['ARTD'] = "Digital Arts";
+dept['ARTF'] = "Fibers";
+dept['ARTM'] = "Metalsmithing & Jewelry";
+dept['ARTO'] = "Photography";
+dept['ARTP'] = "Painting";
+dept['ARTR'] = "Printmaking";
+dept['ARTS'] = "Sculpture";
+dept['ASIA'] = "Asian Studies";
+dept['ASL'] = "American Sign Language";
+dept['ASTR'] = "Astronomy";
+dept['BA'] = "Business Administration";
+dept['BE'] = "Business Environment";
+dept['BI'] = "Biology";
+dept['CARC'] = "Career Center";
+dept['CAS'] = "College of Arts & Sciences";
+dept['CDS'] = "Communication Disorders & Sci";
+dept['CFT'] = "Couples & Family Therapy";
+dept['CH'] = "Chemistry";
+dept['CHN'] = "Chinese";
+dept['CHNF'] = "Chinese Flagship";
+dept['CINE'] = "Cinema Studies";
+dept['CIS'] = "Computer & Information Science";
+dept['CIT'] = "Computer Information Tech";
+dept['CLAS'] = "Classics";
+dept['COLT'] = "Comparative Literature";
+dept['CPSY'] = "Counseling Psychology";
+dept['CRES'] = "Conflict & Dispute Resolution";
+dept['CRWR'] = "Creative Writing";
+dept['CSCH'] = "College Scholars";
+dept['DAN'] = "Dance Professional";
+dept['DANC'] = "Dance Activity";
+dept['DANE'] = "Danish";
+dept['DIST'] = "Distance Education";
+dept['DSC'] = "Decision Sciences";
+dept['EALL'] = "East Asian Lang & Literature";
+dept['EC'] = "Economics";
+dept['EDLD'] = "Educational Leadership";
+dept['EDST'] = "Education Studies";
+dept['EDUC'] = "Education";
+dept['ENG'] = "English";
+dept['ENVS'] = "Environmental Studies";
+dept['ES'] = "Ethnic Studies";
+dept['ESC'] = "Community Internship Program";
+dept['EURO'] = "European Studies";
+dept['FHS'] = "Family & Human Services";
+dept['FIN'] = "Finance";
+dept['FINN'] = "Finnish";
+dept['FLR'] = "Folklore";
+dept['FR'] = "French";
+dept['FSEM'] = "Freshman Seminar";
+dept['GEOG'] = "Geography";
+dept['GEOL'] = "Geology";
+dept['GER'] = "German";
+dept['GRK'] = "Greek";
+dept['GSS'] = "General Social Science";
+dept['HBRW'] = "Hebrew";
+dept['HC'] = "Honors College";
+dept['HIST'] = "History";
+dept['HPHY'] = "Human Physiology";
+dept['HUM'] = "Humanities";
+dept['IARC'] = "Interior Architecture";
+dept['INTL'] = "International Studies";
+dept['IST'] = "Interdisciplinary Studies";
+dept['ITAL'] = "Italian";
+dept['J'] = "Journalism";
+dept['JDST'] = "Judaic Studies";
+dept['JGS'] = "Japanese Global Scholars";
+dept['JPN'] = "Japanese";
+dept['KRN'] = "Korean";
+dept['LA'] = "Landscape Architecture";
+dept['LAS'] = "Latin American Studies";
+dept['LAT'] = "Latin";
+dept['LAW'] = "Law";
+dept['LEAD'] = "Leadership Development";
+dept['LERC'] = "Labor Educ & Research Center";
+dept['LIB'] = "Library";
+dept['LING'] = "Linguistics";
+dept['LT'] = "Language Teaching";
+dept['MATH'] = "Mathematics";
+dept['MDVL'] = "Medieval Studies";
+dept['MGMT'] = "Management";
+dept['MIL'] = "Military Science";
+dept['MKTG'] = "Marketing";
+dept['MUE'] = "Music Education";
+dept['MUJ'] = "Music Jazz Studies";
+dept['MUP'] = "Music Performance";
+dept['MUS'] = "Music";
+dept['NAS'] = "Native American Studies";
+dept['NORW'] = "Norwegian";
+dept['OIMB'] = "Oregon Inst of Marine Biology";
+dept['OLIS'] = "Oregon Ldrship Sustainability";
+dept['PD'] = "Product Design";
+dept['PDX'] = "UO Portland Programs";
+dept['PEAE'] = "PE Aerobics";
+dept['PEAQ'] = "PE Aquatics";
+dept['PEAS'] = "PE SCUBA";
+dept['PEC'] = "PE Certification";
+dept['PEF'] = "PE Fitness";
+dept['PEI'] = "PE Individual Activities";
+dept['PEIA'] = "PE Intercollegiate Athletics";
+dept['PEL'] = "PE Leadership";
+dept['PEMA'] = "PE Martial Arts";
+dept['PEMB'] = "PE Mind-Body";
+dept['PEO'] = "PE Outdoor Pursuits";
+dept['PEOL'] = "PE Outdoor Pursuits - Land";
+dept['PEOW'] = "PE Outdoor Pursuits - Water";
+dept['PERS'] = "PE Racquet Sports";
+dept['PERU'] = "PE Running";
+dept['PETS'] = "PE Team Sports";
+dept['PEW'] = "PE Weight Training";
+dept['PHIL'] = "Philosophy";
+dept['PHYS'] = "Physics";
+dept['PORT'] = "Portuguese";
+dept['PPPM'] = "Planning Public Policy Mgmt";
+dept['PS'] = "Political Science";
+dept['PSY'] = "Psychology";
+dept['REES'] = "Russ, E Euro & Eurasia Studies";
+dept['REL'] = "Religious Studies";
+dept['RL'] = "Romance Languages";
+dept['RUSS'] = "Russian";
+dept['SAPP'] = "Substance Abuse Prev Prog";
+dept['SBUS'] = "Sports Business";
+dept['SCAN'] = "Scandinavian";
+dept['SCYP'] = "Sustainable City Year Program";
+dept['SERV'] = "Service Learning";
+dept['SOC'] = "Sociology";
+dept['SPAN'] = "Spanish";
+dept['SPED'] = "Special Education";
+dept['SPSY'] = "School Psychology";
+dept['SWAH'] = "Swahili";
+dept['SWED'] = "Swedish";
+dept['TA'] = "Theater Arts";
+dept['TLC'] = "Univ Teaching & Learning Ctr";
+dept['WGS'] = "Women's & Gender Studies";
+dept['WR'] = "Writing";
+
 
 // Recieves Messages, manages message queues, and prompts page updates.
 chrome.runtime.onMessage.addListener(
 	function(message, sender, sendResponse) {
 		messageOut = false;
-		// Update Tooltip with contents from message
-		var lastToolTipId = toolTipQueue.shift();
-		console.log(lastToolTipId);
-		$("#" + lastToolTipId).tooltip('close');
-		$("#" + lastToolTipId).tooltip({content: "<a href='javascript:void(0);' id ='x " + lastToolTipId +"' class='x'></a>" + formatAverages(message.response)});
-		$("#" + lastToolTipId).tooltip('open');
-
+		// Distinguish ack from response
+		if(message.response === "ack") {
+			// Do nothing
+		} else {
+			// Update Tooltip with contents from message
+			var lastToolTipId = toolTipQueue.shift();
+			//console.log(lastToolTipId);
+			$("#" + lastToolTipId).tooltip('close');
+			$("#" + lastToolTipId).tooltip({content: "<a href='javascript:void(0);' id ='x " + lastToolTipId +"' class='x'></a>" + formatAverages(message.response)});
+			$("#" + lastToolTipId).tooltip('open');
+		}
 		// Send next queued message
 		if(messageQueue.length > 0) {
 			messageOut = true;
@@ -67,9 +224,20 @@ function getProfLink(name, idx) {
 	return "<a class='eval' id='" + idx + "' href='javascript:void(0)'>" + name + "</a>";
 }
 
+// Smoothly uses the messaging system to send a message to the eval page
+function sendMessage(message) {
+	// If the messaging system is busy
+	if (messageOut) {
+		// Cache message to be sent later
+		messageQueue.push(message)
+	} else {
+		// Otherwise send message
+		messageOut = true;
+		chrome.runtime.sendMessage(message);
+	}
+}
 
-
-$(function() {
+$(document).ready(function() {
 	var table = document.getElementsByTagName("tbody"); 
 	var rows = table[5].getElementsByTagName("tr"); 
 	var count;
@@ -85,11 +253,9 @@ $(function() {
 			
 			if (count == 3) {
 				course = cells[j].innerHTML;
-				cells[j].innerHTML = "<a class='eval' id='" + idx + "' href='javascript:void(0)'>" + course + "</a>";
-				idx++;
 			} else if (count == 4) {
 				number = cells[j].innerHTML;
-				cells[j].innerHTML = "<a class='eval' id='" + idx + "' href='javascript:void(0)'>" + number + "</a>";
+				cells[j].innerHTML = "<a class='eval' title='" + course + "' id='" + idx + "' href='javascript:void(0)'>" + number + "</a>";
 				idx++;
 			} else if (count == 11) {
 				prof = cells[j].innerText; 
@@ -104,18 +270,24 @@ $(function() {
 		
 	// Create tooltip
 	$(document).on('click', '.eval', function () {
-		// Sending message
+		// Detecting if is class number or professor name
+
 		// Note: slicing string removes things like ' (P)' from the end of the name
-		var profMsg = {name: $(this).context.innerText.slice(0,-4)};
-		if (messageOut) {
-			// Cache message to be sent later
-			messageQueue.push(profMsg)
-			console.log("Caching Message: " + profMsg.name);
-		} else {
-			// Send message
-			messageOut = true;
-			chrome.runtime.sendMessage(profMsg);
-			console.log("Sending Message: " + profMsg.name);
+		var course = $(this).attr("title");
+		console.log(course);
+		var msg = $(this).context.innerText;
+		console.log(msg);
+		console.log("Sending Message "+msg)
+		if(isNaN(msg)){
+			// Message is a Professor's Name
+			var profMsg = {request: true, name: msg.slice(0,-4)};
+			sendMessage(profMsg);
+		}	else {
+			// Message is a class number
+			var classMsg1 = {request: true, subject: dept[course]};
+			var classMsg2 = {request: true, number: msg};
+			sendMessage(classMsg1);
+			sendMessage(classMsg2);
 		}
 
 		// Constructing tooltip
@@ -144,6 +316,16 @@ $(function() {
 		// Add tooltip to queue so it can be edited when message returns
 		toolTipQueue.push($(this).attr("id"));
 	});
+	
+
+	$(document).on('click', '.ui-tooltip', function () {
+		console.log($(this).attr("id"));
+		$('.ui-tooltip').each(function () {
+			$('#' + $(this).attr("id")).css("z-index", "0");
+		});
+		//$('#' + $(this).attr("id")).css("position", "relative");
+		$('#' + $(this).attr("id")).css("z-index", "1");
+	}); 
 
 	// Hide tooltip
 	$(document).on('click', '.x', function () {

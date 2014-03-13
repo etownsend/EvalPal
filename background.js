@@ -69,12 +69,12 @@ var dwp = {
 		// Setting up message handling
 		chrome.runtime.onMessage.addListener(
 			function(message, sender, sendResponse) {
-				if(message.name != null) {
+				if(message.request == true) {
 					// Request: Forward request to eval page and prompt a response
-					chrome.tabs.sendMessage(evalTab.id, {name: message.name});
-				} else if (message.response != null) {
+					chrome.tabs.sendMessage(evalTab.id, message);
+				} else if (message.request == false) {
 					// Response: Foreward response to duckweb page
-					chrome.tabs.sendMessage(duckwebTab.id, {response: message.response});
+					chrome.tabs.sendMessage(duckwebTab.id, message);
 				} else {alert(message.toSource())};
 		});
 	}
