@@ -13,9 +13,17 @@ function returnResults() {
 		var resultsTestProf  = results[3].getElementsByTagName("tr");
 		var resultsTestClass = results[2].getElementsByTagName("tr");
 		if (resultsTestProf.length > 0) {
-			chrome.runtime.sendMessage({request: false, response: getAverages(resultsTestProf)})
+			chrome.runtime.sendMessage({request: false, response: getAverages(resultsTestProf, true)})
 		} else if (resultsTestClass.length > 0) {
+<<<<<<< HEAD
+<<<<<<< HEAD
+			chrome.runtime.sendMessage({request: false, response: getAverages(resultsTestClass, false)})
+=======
 			chrome.runtime.sendMessage({request: false, response: getAverages(resultsTestClass)})
+>>>>>>> FETCH_HEAD
+=======
+			chrome.runtime.sendMessage({request: false, response: getAverages(resultsTestClass)})
+>>>>>>> FETCH_HEAD
 		} else {
 			chrome.runtime.sendMessage({request: false, response: "No results found"})
 		}
@@ -23,9 +31,20 @@ function returnResults() {
 };
 
 
+<<<<<<< HEAD
+<<<<<<< HEAD
+function getAverages(rows, prof) {
+	var table = document.getElementsByTagName("table");
+=======
 function getAverages(rows) {
 	//var table = document.getElementsByTagName("table");
 	//var rows = table[3].getElementsByTagName("tr");
+>>>>>>> FETCH_HEAD
+=======
+function getAverages(rows) {
+	//var table = document.getElementsByTagName("table");
+	//var rows = table[3].getElementsByTagName("tr");
+>>>>>>> FETCH_HEAD
 	//console.log(table[3].innerHTML);
 	
 	var av = new Array(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, "");
@@ -37,7 +56,10 @@ function getAverages(rows) {
 		var cells = rows[i].getElementsByTagName("td");	
 		for(var j = 0; j<cells.length; j++) {
 			count += cells[j].colSpan;
+			
+			console.log(cells[j].innerHTML);
 		
+		if(prof) {
 			if (count == 5) {
 				av[0] += parseFloat(cells[j].innerHTML);
 			} else if (count == 6) {
@@ -53,6 +75,23 @@ function getAverages(rows) {
 			} else if (count == 11) {
 				av[6] += parseFloat(cells[j].innerHTML);
 			}
+		} else {
+			if (count == 4) {
+				av[0] += parseFloat(cells[j].innerHTML);
+			} else if (count == 5) {
+				av[1] += parseFloat(cells[j].innerHTML);
+			} else if (count == 6) {
+				av[2] += parseFloat(cells[j].innerHTML);
+			} else if (count == 7) {
+				av[3] += parseFloat(cells[j].innerHTML);
+			} else if (count == 8) {
+				av[4] += parseFloat(cells[j].innerHTML);
+			} else if (count == 9) {
+				av[5] += parseFloat(cells[j].innerHTML);
+			} else if (count == 10) {
+				av[6] += parseFloat(cells[j].innerHTML);
+			}
+		}
 
 	
 		}
@@ -62,8 +101,13 @@ function getAverages(rows) {
 		av[i] /= parseFloat(rows.length - 9);
 		av[i] = av[i].toFixed(2);
 	}
-	var instructorSelect = document.getElementsByName("instructorSelect")[0];
-	av[7] = instructorSelect.options[instructorSelect.selectedIndex].text;
+	if(prof) {
+		var instructorSelect = document.getElementsByName("instructorSelect")[0];
+		av[7] = instructorSelect.options[instructorSelect.selectedIndex].text;
+	} else {
+		var numberSelect = document.getElementsByName("numberSelect")[0];
+		av[7] = numberSelect.options[numberSelect.selectedIndex].text;
+	}
 	
 	return av;
 	
