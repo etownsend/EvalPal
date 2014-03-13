@@ -4,6 +4,7 @@ var dwp = {
   duckwebTab:{},
 
   setupRegistration: function() {
+    console.log("setting up registration");
     chrome.tabs.executeScript({ file: "jquery.js" }, function() {
       chrome.tabs.executeScript({ file: "jquery-ui.js" }, function() {
         chrome.tabs.executeScript({ file: "injectRegistration.js" });
@@ -16,6 +17,44 @@ var dwp = {
 
   setupEval: function(tab) {
     evalTab = tab;
+    evalProgress = 1;
+    chrome.tabs.onUpdated.addListener(function(id, changeInfo, tab) {
+      // Handling Eval Tab Updates
+      console.log("status: "+ changeInfo.status);
+      if (id == evalTab.id && changeInfo.status === "complete") {
+        console.log("URL change " + changeInfo.status)
+        switch (evalProgress) {
+          case 1:
+            chrome.tabs.executeScript(tab.id, {file: 'injectEvalStage1.js'});
+            console.log("First Stage");
+            break;
+          case 2:
+            chrome.tabs.executeScript(tab.id, {file: 'injectEvalStage2.js'});
+            console.log("Second Stage");
+            break;
+          case 3:
+            chrome.tabs.executeScript(tab.id, {file: 'injectEvalStage3.js'});
+            console.log("Third Stage");
+            dwp.setupRegistration();
+            break;
+          defaut:
+            //chrome.tabs.executeScript(tab.id, {file: 'injectEvalStage3.js'});
+            console.log("Eval page Updated");
+            break;
+        }
+        evalProgress ++;
+      }
+      // Clean up extension if Duckweb Page changes
+      else if(id == duckwebTab.id) {
+        console.log("Registration page Updated");
+        //Close Eval Tab
+        chrome.tabs.remove(evalTab.id);
+        // Reload Extension
+        chrome.runtime.reload();
+      }
+    });
+
+    /*
     setTimeout(function () {
       chrome.tabs.executeScript(tab.id, {file: 'injectEvalStage1.js'});
       setTimeout(function () {
@@ -26,6 +65,7 @@ var dwp = {
         }, 3000);   // end 3rd timeout
       }, 3000);   // end 2nd timeout
     }, 3000);   // End 1st timeout
+    */
   },
 
   initializePages: function () {
