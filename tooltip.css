@@ -8,6 +8,12 @@
     border-radius: 5px;
     font: 12px "Arial", Sans-Serif;
     box-shadow: 0 0 2px black;
+    max-width: 700px;
+  }
+  
+  .ui-tooltip h3 {
+  	color: #669966;
+  	margin: 0px;
   }
   
   .ui-tooltip a.x {

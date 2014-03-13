@@ -3,10 +3,58 @@ function returnResults() {
   var results = document.getElementsByTagName("table");
   var resultsTest  = results[3].getElementsByTagName("tr");
   if (resultsTest.length > 0) {
-    // Return Found Results
-    chrome.runtime.sendMessage({response: results[3].innerHTML})
+    chrome.runtime.sendMessage({response: getAverages()})
+  } else {
+  	chrome.runtime.sendMessage({response: "No results found"})
   }
 };
+
+
+function getAverages() {
+	var table = document.getElementsByTagName("table");
+	var rows = table[3].getElementsByTagName("tr");
+	//console.log(table[3].innerHTML);
+	
+	var av = new Array(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, "");
+  
+	var count;
+	
+	for (var i = 1; i < rows.length-8; i++) {
+		count = 0;
+		var cells = rows[i].getElementsByTagName("td");	
+		for(var j = 0; j<cells.length; j++) {
+			count += cells[j].colSpan;
+		
+			if (count == 5) {
+				av[0] += parseFloat(cells[j].innerHTML);
+			} else if (count == 6) {
+				av[1] += parseFloat(cells[j].innerHTML);
+			} else if (count == 7) {
+				av[2] += parseFloat(cells[j].innerHTML);
+			} else if (count == 8) {
+				av[3] += parseFloat(cells[j].innerHTML);
+			} else if (count == 9) {
+				av[4] += parseFloat(cells[j].innerHTML);
+			} else if (count == 10) {
+				av[5] += parseFloat(cells[j].innerHTML);
+			} else if (count == 11) {
+				av[6] += parseFloat(cells[j].innerHTML);
+			}
+
+	
+		}
+		count++;
+	}
+	for (var i = 0; i < av.length; i++) {
+		av[i] /= parseFloat(rows.length - 9);
+		av[i] = av[i].toFixed(2);
+	}
+	var instructorSelect = document.getElementsByName("instructorSelect")[0];
+	av[7] = instructorSelect.options[instructorSelect.selectedIndex].text;
+	
+  return av;
+  
+}
 
 // Generates an integer which indicates a subjective degree of matching
 // between two strings. Optimized for matching names with tokens

@@ -18,7 +18,7 @@ chrome.runtime.onMessage.addListener(
 		var lastToolTipId = toolTipQueue.shift();
 		console.log(lastToolTipId);
 		$("#" + lastToolTipId).tooltip('close');
-		$("#" + lastToolTipId).tooltip({content: "<a href='javascript:void(0);' id ='x " + lastToolTipId +"' class='x'></a>" + message.response});
+		$("#" + lastToolTipId).tooltip({content: "<a href='javascript:void(0);' id ='x " + lastToolTipId +"' class='x'></a>" + formatAverages(message.response)});
 		$("#" + lastToolTipId).tooltip('open');
 
 		// Send next queued message
@@ -28,6 +28,21 @@ chrome.runtime.onMessage.addListener(
 			chrome.runtime.sendMessage(messageQueue.shift());
 		}
 });
+
+
+function formatAverages(av) {
+	if (av == "No results found")
+		return "No results found";
+	var str = "<h3>Instructor Evaluations For " + av[av.length-1] + "</h3><br />";
+	str += "<b>Quality of Courses Taught this Professor:</b> " + av[0];
+	str += "<br /><b>Quality of Teaching:</b> " + av[1];
+	str += "<br /><b>Professor's Organization:</b> " + av[2];
+	str += "<br /><b>Use of Class Time:</b> " + av[3];
+	str += "<br /><b>Availability Outside of Class:</b> " + av[4];
+	str += "<br /><b>Clarity of Evaluation Guidelines:</b> " + av[5];
+	str += "<br /><b>Amount Learned in Courses Taught by this Professor:</b> " + av[6];
+	return str;
+}
 
 
 function getProfLink(name, idx) {
