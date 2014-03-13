@@ -15,7 +15,7 @@ function returnResults() {
 		if (resultsTestProf.length > 0) {
 			chrome.runtime.sendMessage({request: false, response: getAverages(resultsTestProf)})
 		} else if (resultsTestClass.length > 0) {
-			chrome.runtime.sendMessage({request: false, response: getAverages(resultsTestProf)})
+			chrome.runtime.sendMessage({request: false, response: getAverages(resultsTestClass)})
 		} else {
 			chrome.runtime.sendMessage({request: false, response: "No results found"})
 		}
@@ -24,14 +24,14 @@ function returnResults() {
 
 
 function getAverages(rows) {
-	var table = document.getElementsByTagName("table");
-	var rows = table[3].getElementsByTagName("tr");
+	//var table = document.getElementsByTagName("table");
+	//var rows = table[3].getElementsByTagName("tr");
 	//console.log(table[3].innerHTML);
 	
 	var av = new Array(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, "");
 	
 	var count;
-	
+	console.log(rows);
 	for (var i = 1; i < rows.length-8; i++) {
 		count = 0;
 		var cells = rows[i].getElementsByTagName("td");	

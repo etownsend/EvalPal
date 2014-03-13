@@ -167,9 +167,11 @@ dept['WR'] = "Writing";
 chrome.runtime.onMessage.addListener(
 	function(message, sender, sendResponse) {
 		messageOut = false;
+		console.log(message);
 		// Distinguish ack from response
-		if(message.response === "ack") {
+		if(message.response == "ack") {
 			// Do nothing
+			console.log("got ack");
 		} else {
 			// Update Tooltip with contents from message
 			var lastToolTipId = toolTipQueue.shift();
