@@ -22,25 +22,23 @@ var dwp = {
       // Handling Eval Tab Updates
       console.log("status: "+ changeInfo.status);
       if (id == evalTab.id && changeInfo.status === "complete") {
-        console.log("URL change " + changeInfo.status)
-        switch (evalProgress) {
-          case 1:
-            chrome.tabs.executeScript(tab.id, {file: 'injectEvalStage1.js'});
-            console.log("First Stage");
-            break;
-          case 2:
-            chrome.tabs.executeScript(tab.id, {file: 'injectEvalStage2.js'});
-            console.log("Second Stage");
-            break;
-          case 3:
-            chrome.tabs.executeScript(tab.id, {file: 'injectEvalStage3.js'});
-            console.log("Third Stage");
-            dwp.setupRegistration();
-            break;
-          defaut:
-            //chrome.tabs.executeScript(tab.id, {file: 'injectEvalStage3.js'});
-            console.log("Eval page Updated");
-            break;
+        console.log("EvalProgress " + evalProgress)
+        if (evalProgress == 1) {
+          chrome.tabs.executeScript(tab.id, {file: 'injectEvalStage1.js'});
+          console.log("First Stage");
+        }
+        if (evalProgress == 2) {
+          chrome.tabs.executeScript(tab.id, {file: 'injectEvalStage2.js'});
+          console.log("Second Stage");
+        }
+        if (evalProgress == 3) {
+          chrome.tabs.executeScript(tab.id, {file: 'injectEvalStage3.js'});
+          dwp.setupRegistration();
+          console.log("Third Stage");
+        }
+        if (evalProgress >= 4) {
+          chrome.tabs.executeScript(tab.id, {file: 'injectEvalStage3.js'});
+          console.log("Eval page Updated");
         }
         evalProgress ++;
       }
@@ -53,21 +51,10 @@ var dwp = {
         chrome.runtime.reload();
       }
     });
-
-    /*
-    setTimeout(function () {
-      chrome.tabs.executeScript(tab.id, {file: 'injectEvalStage1.js'});
-      setTimeout(function () {
-        chrome.tabs.executeScript(tab.id, {file: 'injectEvalStage2.js'});
-        setTimeout(function () {
-          chrome.tabs.executeScript(tab.id, {file: 'injectEvalStage3.js'});
-          dwp.setupRegistration()
-        }, 3000);   // end 3rd timeout
-      }, 3000);   // end 2nd timeout
-    }, 3000);   // End 1st timeout
-    */
   },
 
+
+  // Does
   initializePages: function () {
     // Remembering info for current active tab
     chrome.tabs.query({currentWindow: true, active: true}, function(tabsArray) {
@@ -85,14 +72,10 @@ var dwp = {
         if(message.name != null) {
           // Request: Forward request to eval page and prompt a response
           chrome.tabs.sendMessage(evalTab.id, {name: message.name});
-          setTimeout(function() {
-            chrome.tabs.executeScript(evalTab.id, {file: 'injectEvalStage3.js'});
-          }, 4000);
         } else if (message.response != null) {
           // Response: Foreward response to duckweb page
           chrome.tabs.sendMessage(duckwebTab.id, {response: message.response});
         } else {alert(message.toSource())};
     });
-    //window.close();
   }
 };
