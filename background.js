@@ -79,3 +79,29 @@ var dwp = {
 		});
 	}
 };
+var check = true;
+// Does the heavy lifting in starting the extension
+function handleInit(tabId, changeInfo, tab) {
+	if(
+		(changeInfo.status == "complete") && 
+		(tab.url.indexOf("duckweb.uoregon.edu") != -1) &&
+		(tab.title === "Look-Up Classes to Add:")
+	) {
+		chrome.tabs.onUpdated.removeListener(handleInit);
+		chrome.pageAction.show(tabId);
+		dwp.initializePages();
+		return true;
+	} else {
+		return false;
+	}
+}
+
+// Initiates the extension if the correct page is navigated to
+console.log(chrome.tabs.query( {currentWindow: true, active: true}, function(tabs) {
+	// Checks the current Page
+	var a = handleInit(tabs[0].id, {status: "complete"}, tabs[0]);
+	// Otherwise, sets an event listener;
+	if (!a) {
+		chrome.tabs.onUpdated.addListener(handleInit);
+	}
+}));

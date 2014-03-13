@@ -56,38 +56,38 @@ function getProfLink(name, idx) {
 
 
 $(function() {
-var table = document.getElementsByTagName("tbody"); 
-var rows = table[5].getElementsByTagName("tr"); 
-var count;
-var idx = 0;
-var course, number, prof;
+	var table = document.getElementsByTagName("tbody"); 
+	var rows = table[5].getElementsByTagName("tr"); 
+	var count;
+	var idx = 0;
+	var course, number, prof;
 
-for (var i = 3; i < rows.length; i++) {
-	count = 0;
-	var cells = rows[i].getElementsByTagName("td");
-	
-	for(var j = 0; j<cells.length; j++) {
-		count += cells[j].colSpan;
+	for (var i = 3; i < rows.length; i++) {
+		count = 0;
+		var cells = rows[i].getElementsByTagName("td");
 		
-		if (count == 3) {
-			course = cells[j].innerHTML;
-			cells[j].innerHTML = "<a class='eval' id='" + idx + "' href='javascript:void(0)'>" + course + "</a>";
-			idx++;
-		} else if (count == 4) {
-			number = cells[j].innerHTML;
-			cells[j].innerHTML = "<a class='eval' id='" + idx + "' href='javascript:void(0)'>" + number + "</a>";
-			idx++;
-		} else if (count == 11) {
-			prof = cells[j].innerText; 
-			cells[j].innerHTML = getProfLink(prof, idx);
-			idx++;
+		for(var j = 0; j<cells.length; j++) {
+			count += cells[j].colSpan;
+			
+			if (count == 3) {
+				course = cells[j].innerHTML;
+				cells[j].innerHTML = "<a class='eval' id='" + idx + "' href='javascript:void(0)'>" + course + "</a>";
+				idx++;
+			} else if (count == 4) {
+				number = cells[j].innerHTML;
+				cells[j].innerHTML = "<a class='eval' id='" + idx + "' href='javascript:void(0)'>" + number + "</a>";
+				idx++;
+			} else if (count == 11) {
+				prof = cells[j].innerText; 
+				cells[j].innerHTML = getProfLink(prof, idx);
+				idx++;
+			}
 		}
 	}
-}
 
-// Creates tooltip. Prompts actions for items on page when clicked
-$('a.eval').css({"background-color": "#f4f199"});
-	
+	// Creates tooltip. Prompts actions for items on page when clicked
+	$('a.eval').css({"background-color": "#f4f199"});
+		
 	// Create tooltip
 	$(document).on('click', '.eval', function () {
 		// Sending message
@@ -146,5 +146,4 @@ $('a.eval').css({"background-color": "#f4f199"});
 	$(".eval").on('mouseenter', function (e) {
 		e.stopImmediatePropagation();
 	});
-
 });
