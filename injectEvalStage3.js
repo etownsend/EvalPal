@@ -15,15 +15,7 @@ function returnResults() {
 		if (resultsTestProf.length > 0) {
 			chrome.runtime.sendMessage({request: false, response: getAverages(resultsTestProf, true)})
 		} else if (resultsTestClass.length > 0) {
-<<<<<<< HEAD
-<<<<<<< HEAD
 			chrome.runtime.sendMessage({request: false, response: getAverages(resultsTestClass, false)})
-=======
-			chrome.runtime.sendMessage({request: false, response: getAverages(resultsTestClass)})
->>>>>>> FETCH_HEAD
-=======
-			chrome.runtime.sendMessage({request: false, response: getAverages(resultsTestClass)})
->>>>>>> FETCH_HEAD
 		} else {
 			chrome.runtime.sendMessage({request: false, response: "No results found"})
 		}
@@ -31,20 +23,9 @@ function returnResults() {
 };
 
 
-<<<<<<< HEAD
-<<<<<<< HEAD
+
 function getAverages(rows, prof) {
 	var table = document.getElementsByTagName("table");
-=======
-function getAverages(rows) {
-	//var table = document.getElementsByTagName("table");
-	//var rows = table[3].getElementsByTagName("tr");
->>>>>>> FETCH_HEAD
-=======
-function getAverages(rows) {
-	//var table = document.getElementsByTagName("table");
-	//var rows = table[3].getElementsByTagName("tr");
->>>>>>> FETCH_HEAD
 	//console.log(table[3].innerHTML);
 	
 	var av = new Array(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, "");
