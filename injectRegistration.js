@@ -176,13 +176,22 @@ chrome.runtime.onMessage.addListener(
 			// Update Tooltip with contents from message
 			var lastToolTipId = toolTipQueue.shift();
 			$("#" + lastToolTipId).tooltip('close');
+			var x = "<a href='javascript:void(0);' id ='x " + lastToolTipId + "' class='x'></a>";
 			var attr = $("#" + lastToolTipId).attr('title');
 			if (typeof attr == 'undefined' || attr == false)
-				$("#" + lastToolTipId).tooltip({content: "<a href='javascript:void(0);' id ='x " + lastToolTipId +"' class='x'></a>" + formatAverages(message.response)});
+				$("#" + lastToolTipId).tooltip({content: x + formatAverages(message.response)});
 			else 
-				$("#" + lastToolTipId).tooltip({content: "<a href='javascript:void(0);' id ='x " + lastToolTipId +"' class='x'></a>" + formatAveragesCourses(message.response, $("#" + lastToolTipId).attr("title"))});
-
+				$("#" + lastToolTipId).tooltip({content: x + formatAveragesCourses(message.response, $("#" + lastToolTipId).attr("title"))});
 			$("#" + lastToolTipId).tooltip('open');
+			
+		$('.ui-tooltip a.x').css("background", "url(" + chrome.extension.getURL('images/x.jpg') + ") no-repeat top center");
+		$(".ui-tooltip a.x").hover(function(){
+   			$(this).css("background-position","bottom center");
+    	},function(){
+    		$(this).css("background", "url(" + chrome.extension.getURL('images/x.jpg') + ") no-repeat top center");
+  		});
+  		
+  		
 		}
 		// Send next queued message
 		if(messageQueue.length > 0) {
@@ -267,6 +276,7 @@ function sendMessage(message) {
 }
 
 $(document).ready(function() {
+//console.log(chrome.extension.getURL('images/x.jpg'));
 	var table = document.getElementsByTagName("tbody"); 
 	var rows = table[5].getElementsByTagName("tr"); 
 	var count;
@@ -322,7 +332,7 @@ $(document).ready(function() {
 		$(this).tooltip({
 			items: '.eval.on',
 			content: function() {
-				var x = "<a href='javascript:void(0);' id ='x " + $(this).attr("id") +"' class='x'></a>";
+				var x = "<a href='javascript:void(0);' id ='x " + $(this).attr("id") + "' class='x'></a>";
 				return x + '<img src="' + chrome.extension.getURL('images/loading2.gif') + '" alt="loading..." />';
 			},
 			position: {
@@ -338,11 +348,19 @@ $(document).ready(function() {
 				}
 			}
 		});
+		
 		$(this).tooltip('open');
+		$('.ui-tooltip a.x').css("background", "url(" + chrome.extension.getURL('images/x.jpg') + ") no-repeat top center");
+		$(".ui-tooltip a.x").hover(function(){
+   			$(this).css("background-position","bottom center");
+    	},function(){
+    		$(this).css("background", "url(" + chrome.extension.getURL('images/x.jpg') + ") no-repeat top center");
+  		});
 		
 		// Add tooltip to queue so it can be edited when message returns
 		toolTipQueue.push($(this).attr("id"));
 	});
+	
 	
 
 	$(document).on('click', '.ui-tooltip', function () {

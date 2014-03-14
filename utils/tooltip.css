@@ -59,13 +59,13 @@
 	right:0;
   	width: 14px;
   	height: 14px;
-  	background: url('chrome-extension://gbekfdkelhgokbaggnfjadclbkmapohd/images/x.jpg') no-repeat top center;
   	display: block;
+  	background-position: top center;
+  	background-repeat: no-repeat;
   }
   
   .ui-tooltip a.x:hover {
   	background-position: bottom center;
-
   }
   
   .arrow {
