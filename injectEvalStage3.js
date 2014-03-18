@@ -1,3 +1,14 @@
+/*
+ * Eval Pal - injectEvalStage3.js
+ * CIS 422 Winter 2014
+ * Written by: Sarah Yablok & Evan Townsend
+ * This file contains the code that gets injected into the applyweb
+ * course evaluations page. It receives messages from injectRegistration,
+ * and looks up the content accordingly, formats it, and delivers it back via
+ * message passing.
+ */
+
+
 // Checks for results data. If present, returns it to the extension.
 function returnResults() {
 	// Acknowledge Half completed course request
@@ -23,65 +34,67 @@ function returnResults() {
 };
 
 
-
+/* This function collects the data from the table on applyweb.
+ It formats this data by averaging each column, and placing the results
+ in an array which houses seven float average values and the name of the
+ course or instructor based off the results of the fuzzy search. */
 function getAverages(rows, prof) {
-	var table = document.getElementsByTagName("table");
-	//console.log(table[3].innerHTML);
-	
-	var av = new Array(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, "");
-	
+	var table = document.getElementsByTagName("table");	
+	var av = new Array(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, ""); // Important output of this function
 	var count;
-	console.log(rows);
+	
+	// Loop through rows
 	for (var i = 1; i < rows.length-8; i++) {
 		count = 0;
 		var cells = rows[i].getElementsByTagName("td");	
+		
+		// Loop through cells
 		for(var j = 0; j<cells.length; j++) {
 			count += cells[j].colSpan;
-			
-			console.log(cells[j].innerHTML);
-		
-		if(prof) {
-			if (count == 5) {
-				av[0] += parseFloat(cells[j].innerHTML);
-			} else if (count == 6) {
-				av[1] += parseFloat(cells[j].innerHTML);
-			} else if (count == 7) {
-				av[2] += parseFloat(cells[j].innerHTML);
-			} else if (count == 8) {
-				av[3] += parseFloat(cells[j].innerHTML);
-			} else if (count == 9) {
-				av[4] += parseFloat(cells[j].innerHTML);
-			} else if (count == 10) {
-				av[5] += parseFloat(cells[j].innerHTML);
-			} else if (count == 11) {
-				av[6] += parseFloat(cells[j].innerHTML);
+			// Addition of all the column data - professors
+			if(prof) {
+				if (count == 5) {
+					av[0] += parseFloat(cells[j].innerHTML); // Q1
+				} else if (count == 6) {
+					av[1] += parseFloat(cells[j].innerHTML); // Q2
+				} else if (count == 7) {
+					av[2] += parseFloat(cells[j].innerHTML); // Q3
+				} else if (count == 8) {
+					av[3] += parseFloat(cells[j].innerHTML); // Q4
+				} else if (count == 9) {
+					av[4] += parseFloat(cells[j].innerHTML); // Q5
+				} else if (count == 10) {
+					av[5] += parseFloat(cells[j].innerHTML); // Q6
+				} else if (count == 11) {
+					av[6] += parseFloat(cells[j].innerHTML); // Q7
+				}
+			// Addition of all the column data - courses
+			} else {
+				if (count == 4) {
+					av[0] += parseFloat(cells[j].innerHTML); // Q1
+				} else if (count == 5) {
+					av[1] += parseFloat(cells[j].innerHTML); // Q2
+				} else if (count == 6) {
+					av[2] += parseFloat(cells[j].innerHTML); // Q3
+				} else if (count == 7) {
+					av[3] += parseFloat(cells[j].innerHTML); // Q4
+				} else if (count == 8) {
+					av[4] += parseFloat(cells[j].innerHTML); // Q5
+				} else if (count == 9) {
+					av[5] += parseFloat(cells[j].innerHTML); // Q6
+				} else if (count == 10) {
+					av[6] += parseFloat(cells[j].innerHTML); // Q7
+				}
 			}
-		} else {
-			if (count == 4) {
-				av[0] += parseFloat(cells[j].innerHTML);
-			} else if (count == 5) {
-				av[1] += parseFloat(cells[j].innerHTML);
-			} else if (count == 6) {
-				av[2] += parseFloat(cells[j].innerHTML);
-			} else if (count == 7) {
-				av[3] += parseFloat(cells[j].innerHTML);
-			} else if (count == 8) {
-				av[4] += parseFloat(cells[j].innerHTML);
-			} else if (count == 9) {
-				av[5] += parseFloat(cells[j].innerHTML);
-			} else if (count == 10) {
-				av[6] += parseFloat(cells[j].innerHTML);
-			}
-		}
-
-	
 		}
 		count++;
 	}
+	// Divide by the total number of entries.
 	for (var i = 0; i < av.length; i++) {
 		av[i] /= parseFloat(rows.length - 9);
 		av[i] = av[i].toFixed(2);
 	}
+	// Set the name of the professor or course #
 	if(prof) {
 		var instructorSelect = document.getElementsByName("instructorSelect")[0];
 		av[7] = instructorSelect.options[instructorSelect.selectedIndex].text;
@@ -89,14 +102,12 @@ function getAverages(rows, prof) {
 		var numberSelect = document.getElementsByName("numberSelect")[0];
 		av[7] = numberSelect.options[numberSelect.selectedIndex].text;
 	}
-	
 	return av;
-	
 }
 
-// Generates an integer which indicates a subjective degree of matching
-// between two strings. Optimized for matching names with tokens
-// truncated or out of order or both.
+/* Generates an integer which indicates a subjective degree of matching
+ between two strings. Optimized for matching names with tokens
+ truncated or out of order or both. */
 function getMatchValue(first, second) {
 	var splitFirst = first.split(/[ ,]+/);
 	var splitSecond = second.split(/[ ,]+/);
@@ -142,7 +153,6 @@ function getInstructorId(instructorSelect, name) {
 // Setting up message passing
 chrome.runtime.onMessage.addListener(
 	function(message, sender, sendResponse) {
-		console.log(message);
 
 		// Setting Instructor
 		if(message.name != null) {
@@ -164,7 +174,6 @@ chrome.runtime.onMessage.addListener(
 
 		// Setting Course Number
 		if(message.number != null) {
-			console.log(message.number);
 			var numberSelect = document.getElementsByName("numberSelect")[0];
 			numberSelect.value = message.number;
 			var evt = document.createEvent("HTMLEvents");
@@ -180,14 +189,3 @@ if(document.readyState == "complete" || document.readyState == "loaded") {
 	// Triggering stuff for when the page loads
 	document.addEventListener('DOMContentLoaded', returnResults);
 }
-
-/*
-var subjectSelect = document.getElementsByName("subjectSelect")[0];
-var numberSelect = document.getElementsByName("numberSelect")[0];
-subjectSelect.value = "Computer & Information Science";
-numberSelect.value = "111";
-var evt = document.createEvent("HTMLEvents");
-evt.initEvent("change", false, true);
-numberSelect.dispatchEvent(evt);
-
-*/

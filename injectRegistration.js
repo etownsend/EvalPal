@@ -1,16 +1,20 @@
-// This file contains the code that gets injected into the 
-// body of the duckweb class registration page
+/*
+ * Eval Pal - injectRegistration.js
+ * CIS 422 Winter 2014
+ * Written by: Sarah Yablok & Evan Townsend
+ * This file contains the code that gets injected into the body of 
+ * the DuckWeb page. Including tooltips the associated highlight links
+ * It also sends messages to injectEvalStage3.js to share information.
+ */
 
-// Edit contents of main table on duckweb class lookup page
 
-// Keeps track of the most recently opened tooltip so it can
-// be edited
+/* Global variable queue which keeps track of the most recently opened
+ tooltip so it can be edited */
 var messageOut = false;
 var toolTipQueue = [];
 var messageQueue = [];
 
-// Hash table of the University's various departments and their
-// Abbreviations
+// Hash table of the University's various departments and their abbreviations
 var dept = {};
 dept['AA'] = "Allied Arts";
 dept['AAA'] = "Architecture & Allied Arts";
@@ -163,106 +167,122 @@ dept['WGS'] = "Women's & Gender Studies";
 dept['WR'] = "Writing";
 
 
-// Recieves Messages, manages message queues, and prompts page updates.
-chrome.runtime.onMessage.addListener(
-	function(message, sender, sendResponse) {
-		messageOut = false;
-		console.log(message);
-		// Distinguish ack from response
-		if(message.response == "ack") {
-			// Do nothing
-			console.log("got ack");
-		} else {
-			// Update Tooltip with contents from message
-			var lastToolTipId = toolTipQueue.shift();
-			$("#" + lastToolTipId).tooltip('close');
-			var x = "<a href='javascript:void(0);' id ='x " + lastToolTipId + "' class='x'></a>";
-			var attr = $("#" + lastToolTipId).attr('title');
-			if (typeof attr == 'undefined' || attr == false)
-				$("#" + lastToolTipId).tooltip({content: x + formatAverages(message.response)});
-			else 
-				$("#" + lastToolTipId).tooltip({content: x + formatAveragesCourses(message.response, $("#" + lastToolTipId).attr("title"))});
-			$("#" + lastToolTipId).tooltip('open');
-			
-		$('.ui-tooltip a.x').css("background", "url(" + chrome.extension.getURL('images/x.jpg') + ") no-repeat top center");
-		$(".ui-tooltip a.x").hover(function(){
-   			$(this).css("background-position","bottom center");
+/* Returns the x-button html for the tooltip id provided. */
+function xButton (id) {
+	return "<a href='javascript:void(0);' id ='x " + id + "' class='x'></a>";
+}
+
+
+/* Set the background image of the x-button */
+function xButtonBG () {
+	$('.ui-tooltip a.x').css("background", "url(" + chrome.extension.getURL('images/x.jpg') + ") no-repeat top center");
+	$(".ui-tooltip a.x").hover(function(){
+		$(this).css("background-position","bottom center");
     	},function(){
     		$(this).css("background", "url(" + chrome.extension.getURL('images/x.jpg') + ") no-repeat top center");
   		});
-  		
-  		
+}
+
+
+
+/* Recieves Messages, manages message queues, and prompts page updates when the
+user clicks any of the highlighted links. */
+chrome.runtime.onMessage.addListener(
+	function(message, sender, sendResponse) {
+		messageOut = false;
+		// Distinguish ack from response
+		if(message.response == "ack") {
+			// Do nothing
+		} else {
+			// Update Tooltip with contents from message
+			var lastToolTipId = toolTipQueue.shift();
+			$("#" + lastToolTipId).tooltip('close'); //close and reopen the tooltip to update content
+
+			var attr = $("#" + lastToolTipId).attr('title');
+			if (typeof attr == 'undefined' || attr == false)
+				$("#" + lastToolTipId).tooltip({content: xButton(lastToolTipId) + formatAverages(message.response)});
+			else 
+				$("#" + lastToolTipId).tooltip({content: xButton(lastToolTipId) + formatAveragesCourses(message.response, $("#" + lastToolTipId).attr("title"))});
+				
+			$("#" + lastToolTipId).tooltip('open'); //reopen tooltip
+			xButtonBG();
 		}
 		// Send next queued message
 		if(messageQueue.length > 0) {
 			messageOut = true;
-			console.log("Sending Queued Message");
 			chrome.runtime.sendMessage(messageQueue.shift());
 		}
 });
 
-
+/* This function formats the averages data in HTML format for the 
+ professors tooltips */
 function formatAverages(av) {
-	if (av == "No results found")
+	if (av == "No results found") // Error handling for no professor found
 		return "No results found";
+	
+	// Title
 	var str = "<h3>Instructor Evaluations For " + av[av.length-1] + "</h3><br /><table>";
+	// Quality of courses
 	str += "<tr><td class='right'><b>Quality of Courses Taught by this Professor:</b></td>";
 	str += "<td><span class='gray-bar'> <span class='rating' style='width:" + Math.round(100*(av[0]/5.0)) + "%;'></span></span>" + av[0] + " out of 5</td></tr>";
+	// Quality of Teaching
 	str += "<tr><td class='right'><b>Quality of Teaching:</b> ";
 	str += "<td><span class='gray-bar'> <span class='rating' style='width:" + Math.round(100*(av[1]/5.0)) + "%;'></span></span>" + av[1] + " out of 5</td></tr>";
-
+	// Organization
 	str += "<tr><td class='right'><b>Professor's Organization:</b> ";
 	str += "<td><span class='gray-bar'> <span class='rating' style='width:" + Math.round(100*(av[2]/5.0)) + "%;'></span></span>" + av[2] + " out of 5</td></tr>";
-
-
+	// Use of class time
 	str += "<tr><td class='right'><b>Use of Class Time:</b> ";
 	str += "<td><span class='gray-bar'> <span class='rating' style='width:" + Math.round(100*(av[3]/5.0)) + "%;'></span></span>" + av[3] + " out of 5</td></tr>";
-
+	// Availability outside of class
 	str += "<tr><td class='right'><b>Availability Outside of Class:</b> ";
 	str += "<td><span class='gray-bar'> <span class='rating' style='width:" + Math.round(100*(av[4]/5.0)) + "%;'></span></span>" + av[4] + " out of 5</td></tr>";
-
+	// Clarity of Evaluation Guidelines
 	str += "<tr><td class='right'><b>Clarity of Evaluation Guidelines:</b> ";
 	str += "<td><span class='gray-bar'> <span class='rating' style='width:" + Math.round(100*(av[5]/5.0)) + "%;'></span></span>" + av[5] + " out of 5</td></tr>";
-
+	// Amount Learned.
 	str += "<tr><td style='border-bottom:none;' class='right'><b>Amount Learned in Courses Taught by this Professor:</b> ";
 	str += "<td style='border-bottom:none;'><span class='gray-bar'> <span class='rating' style='width:" + Math.round(100*(av[6]/5.0)) + "%;'></span></span>" + av[6] + " out of 5</td></tr>";
-
 	return str;
 }
 
-
+/* This function formats the averages data in HTML format for the 
+ courses tooltips */
 function formatAveragesCourses(av, n) {
-	if (av == "No results found")
+	if (av == "No results found") // Error handling for no course found
 		return "No results found";
+		
+	// Title
 	var str = "<h3>Course Evaluations For " + n + "</h3><br /><table>";
+	// Quality of the Course
 	str += "<tr><td class='right'><b>Quality of this course:</b></td>";
 	str += "<td><span class='gray-bar'> <span class='rating' style='width:" + Math.round(100*(av[0]/5.0)) + "%;'></span></span>" + av[0] + " out of 5</td></tr>";
+	// Quality of the Teaching
 	str += "<tr><td class='right'><b>Quality of Teaching:</b> ";
 	str += "<td><span class='gray-bar'> <span class='rating' style='width:" + Math.round(100*(av[1]/5.0)) + "%;'></span></span>" + av[1] + " out of 5</td></tr>";
-
+	// Organization
 	str += "<tr><td class='right'><b>Course Oragnization:</b> ";
 	str += "<td><span class='gray-bar'> <span class='rating' style='width:" + Math.round(100*(av[2]/5.0)) + "%;'></span></span>" + av[2] + " out of 5</td></tr>";
-
-
+	// Clarity of Evaluation
 	str += "<tr><td class='right'><b>Clarity of Evaluation Guidelines:</b> ";
 	str += "<td><span class='gray-bar'> <span class='rating' style='width:" + Math.round(100*(av[5]/5.0)) + "%;'></span></span>" + av[5] + " out of 5</td></tr>";
-
+	// Amount Learned
 	str += "<tr><td style='border-bottom:none;' class='right'><b>Amount Learned in this course:</b> ";
 	str += "<td style='border-bottom:none;'><span class='gray-bar'> <span class='rating' style='width:" + Math.round(100*(av[6]/5.0)) + "%;'></span></span>" + av[6] + " out of 5</td></tr>";
-
 	return str;
 }
 
 
+/* Get the appropriate highlighted link HTML for professors */
 function getProfLink(name, idx) {
-	var res = name.split("(");
+	var res = name.split("("); // Split at "(" in case of (P) at the end.
 	var prof = res[0].trim();
 	if (prof == "TBA" || prof == "STAFF" || prof == "")
 		return name;
 	return "<a class='eval' id='" + idx + "' href='javascript:void(0)'>" + name + "</a>";
 }
 
-// Smoothly uses the messaging system to send a message to the eval page
+/* Smoothly uses the messaging system to send a message to the eval page */
 function sendMessage(message) {
 	// If the messaging system is busy
 	if (messageOut) {
@@ -275,28 +295,34 @@ function sendMessage(message) {
 	}
 }
 
+
+/* This is the main function which sets up all of the tooltips and injects
+ all of the highlighted links on the document's load. This also sets up event
+ handling for clicks on links, the x-button, and rearranging tabs.*/
 $(document).ready(function() {
-//console.log(chrome.extension.getURL('images/x.jpg'));
+	// Sort through the duckweb table to get the right columns to highlight
 	var table = document.getElementsByTagName("tbody"); 
 	var rows = table[5].getElementsByTagName("tr"); 
 	var count;
 	var idx = 0;
 	var course, number, prof;
 
+	// Loop through rows
 	for (var i = 3; i < rows.length; i++) {
 		count = 0;
 		var cells = rows[i].getElementsByTagName("td");
-		
+		// Loop through columns
 		for(var j = 0; j<cells.length; j++) {
 			count += cells[j].colSpan;
-			
 			if (count == 3) {
 				course = cells[j].innerHTML;
+			// Highlight the course #
 			} else if (count == 4) {
 				number = cells[j].innerHTML;
 				if (cells[j].innerText.trim() != "")
 					cells[j].innerHTML = "<a class='eval' title='" + course + " " + number + "' id='" + idx + "' href='javascript:void(0)'>" + number + "</a>";
 				idx++;
+			// Highlight the Professor Name
 			} else if (count == 11) {
 				prof = cells[j].innerText; 
 				cells[j].innerHTML = getProfLink(prof, idx);
@@ -305,13 +331,12 @@ $(document).ready(function() {
 		}
 	}
 
-	// Creates tooltip. Prompts actions for items on page when clicked
+	// Set the background color to yellow on all Eval Pal links
 	$('a.eval').css({"background-color": "#f4f199"});
 		
-	// Create tooltip
+	// Create the tooltip upon clicking
 	$(document).on('click', '.eval', function () {
 		// Detecting if is class number or professor name
-
 		// Note: slicing string removes things like ' (P)' from the end of the name
 		var msg = $(this).context.innerText;
 		if(isNaN(msg)){
@@ -332,10 +357,11 @@ $(document).ready(function() {
 		$(this).tooltip({
 			items: '.eval.on',
 			content: function() {
-				var x = "<a href='javascript:void(0);' id ='x " + $(this).attr("id") + "' class='x'></a>";
-				return x + '<img src="' + chrome.extension.getURL('images/loading2.gif') + '" alt="loading..." />';
+				// Set the content to default to the loading image.
+				return xButton($(this).attr("id")) + '<img src="' + chrome.extension.getURL('images/loading2.gif') + '" alt="loading..." />';
 			},
 			position: {
+				// Set the positioning of the tooltip relative to the link
 				my: "center bottom-20",
 				at: "center top",
 				using: function( position, feedback ) {
@@ -348,23 +374,18 @@ $(document).ready(function() {
 				}
 			}
 		});
+
+		$(this).tooltip('open'); // Open the tooltip!
 		
-		$(this).tooltip('open');
-		$('.ui-tooltip a.x').css("background", "url(" + chrome.extension.getURL('images/x.jpg') + ") no-repeat top center");
-		$(".ui-tooltip a.x").hover(function(){
-   			$(this).css("background-position","bottom center");
-    	},function(){
-    		$(this).css("background", "url(" + chrome.extension.getURL('images/x.jpg') + ") no-repeat top center");
-  		});
+		xButtonBG(); // Update the tooltip image
 		
 		// Add tooltip to queue so it can be edited when message returns
 		toolTipQueue.push($(this).attr("id"));
 	});
-	
-	
 
+	// This sets the tooltip which is clicked on to be brought to the front
+	// via the z-index css property
 	$(document).on('click', '.ui-tooltip', function () {
-		console.log($(this).attr("id"));
 		$('.ui-tooltip').each(function () {
 			$('#' + $(this).attr("id")).css("z-index", "0");
 		});
@@ -372,7 +393,7 @@ $(document).ready(function() {
 		$('#' + $(this).attr("id")).css("z-index", "1");
 	}); 
 
-	// Hide tooltip
+	// Hide tooltip when the x-button is clicked.
 	$(document).on('click', '.x', function () {
 		res = $(this).attr("id").split(" ");
 		var id = res[1];
@@ -380,7 +401,7 @@ $(document).ready(function() {
 		$("#" + id).removeClass("on");
 	}); 
 		
-	//prevent mouseout and other related events from firing their handlers
+	// Prevent mouseout and other related events from firing their handlers.
 	$(".eval").on('mouseout', function (e) {
 		e.stopImmediatePropagation();
 	});
