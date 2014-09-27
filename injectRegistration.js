@@ -7,165 +7,22 @@
  * It also sends messages to injectEvalStage3.js to share information.
  */
 
-
-/* Global variable queue which keeps track of the most recently opened
- tooltip so it can be edited */
-var messageOut = false;
+// Keeps track of the most recently opened tooltip so it can be closed later
 var toolTipQueue = [];
+
+// Keep track of the state of the messaging system
 var messageQueue = [];
+var firstMessage = true;
+var messageOut = false;
 
-// Hash table of the University's various departments and their abbreviations
-var dept = {};
-dept['AA'] = "Allied Arts";
-dept['AAA'] = "Architecture & Allied Arts";
-dept['AAAP'] = "Historic Preservation";
-dept['AAD'] = "Arts & Administration";
-dept['ACTG'] = "Accounting";
-dept['AEIS'] = "Acad Eng for Intl Stu";
-dept['AFR'] = "African Studies";
-dept['AIM'] = "Applied Information Management";
-dept['ANTH'] = "Anthropology";
-dept['ARB'] = "Arabic";
-dept['ARCH'] = "Architecture";
-dept['ARH'] = "Art History";
-dept['ART'] = "Art";
-dept['ARTC'] = "Ceramics";
-dept['ARTD'] = "Digital Arts";
-dept['ARTF'] = "Fibers";
-dept['ARTM'] = "Metalsmithing & Jewelry";
-dept['ARTO'] = "Photography";
-dept['ARTP'] = "Painting";
-dept['ARTR'] = "Printmaking";
-dept['ARTS'] = "Sculpture";
-dept['ASIA'] = "Asian Studies";
-dept['ASL'] = "American Sign Language";
-dept['ASTR'] = "Astronomy";
-dept['BA'] = "Business Administration";
-dept['BE'] = "Business Environment";
-dept['BI'] = "Biology";
-dept['CARC'] = "Career Center";
-dept['CAS'] = "College of Arts & Sciences";
-dept['CDS'] = "Communication Disorders & Sci";
-dept['CFT'] = "Couples & Family Therapy";
-dept['CH'] = "Chemistry";
-dept['CHN'] = "Chinese";
-dept['CHNF'] = "Chinese Flagship";
-dept['CINE'] = "Cinema Studies";
-dept['CIS'] = "Computer & Information Science";
-dept['CIT'] = "Computer Information Tech";
-dept['CLAS'] = "Classics";
-dept['COLT'] = "Comparative Literature";
-dept['CPSY'] = "Counseling Psychology";
-dept['CRES'] = "Conflict & Dispute Resolution";
-dept['CRWR'] = "Creative Writing";
-dept['CSCH'] = "College Scholars";
-dept['DAN'] = "Dance Professional";
-dept['DANC'] = "Dance Activity";
-dept['DANE'] = "Danish";
-dept['DIST'] = "Distance Education";
-dept['DSC'] = "Decision Sciences";
-dept['EALL'] = "East Asian Lang & Literature";
-dept['EC'] = "Economics";
-dept['EDLD'] = "Educational Leadership";
-dept['EDST'] = "Education Studies";
-dept['EDUC'] = "Education";
-dept['ENG'] = "English";
-dept['ENVS'] = "Environmental Studies";
-dept['ES'] = "Ethnic Studies";
-dept['ESC'] = "Community Internship Program";
-dept['EURO'] = "European Studies";
-dept['FHS'] = "Family & Human Services";
-dept['FIN'] = "Finance";
-dept['FINN'] = "Finnish";
-dept['FLR'] = "Folklore";
-dept['FR'] = "French";
-dept['FSEM'] = "Freshman Seminar";
-dept['GEOG'] = "Geography";
-dept['GEOL'] = "Geology";
-dept['GER'] = "German";
-dept['GRK'] = "Greek";
-dept['GSS'] = "General Social Science";
-dept['HBRW'] = "Hebrew";
-dept['HC'] = "Honors College";
-dept['HIST'] = "History";
-dept['HPHY'] = "Human Physiology";
-dept['HUM'] = "Humanities";
-dept['IARC'] = "Interior Architecture";
-dept['INTL'] = "International Studies";
-dept['IST'] = "Interdisciplinary Studies";
-dept['ITAL'] = "Italian";
-dept['J'] = "Journalism";
-dept['JDST'] = "Judaic Studies";
-dept['JGS'] = "Japanese Global Scholars";
-dept['JPN'] = "Japanese";
-dept['KRN'] = "Korean";
-dept['LA'] = "Landscape Architecture";
-dept['LAS'] = "Latin American Studies";
-dept['LAT'] = "Latin";
-dept['LAW'] = "Law";
-dept['LEAD'] = "Leadership Development";
-dept['LERC'] = "Labor Educ & Research Center";
-dept['LIB'] = "Library";
-dept['LING'] = "Linguistics";
-dept['LT'] = "Language Teaching";
-dept['MATH'] = "Mathematics";
-dept['MDVL'] = "Medieval Studies";
-dept['MGMT'] = "Management";
-dept['MIL'] = "Military Science";
-dept['MKTG'] = "Marketing";
-dept['MUE'] = "Music Education";
-dept['MUJ'] = "Music Jazz Studies";
-dept['MUP'] = "Music Performance";
-dept['MUS'] = "Music";
-dept['NAS'] = "Native American Studies";
-dept['NORW'] = "Norwegian";
-dept['OIMB'] = "Oregon Inst of Marine Biology";
-dept['OLIS'] = "Oregon Ldrship Sustainability";
-dept['PD'] = "Product Design";
-dept['PDX'] = "UO Portland Programs";
-dept['PEAE'] = "PE Aerobics";
-dept['PEAQ'] = "PE Aquatics";
-dept['PEAS'] = "PE SCUBA";
-dept['PEC'] = "PE Certification";
-dept['PEF'] = "PE Fitness";
-dept['PEI'] = "PE Individual Activities";
-dept['PEIA'] = "PE Intercollegiate Athletics";
-dept['PEL'] = "PE Leadership";
-dept['PEMA'] = "PE Martial Arts";
-dept['PEMB'] = "PE Mind-Body";
-dept['PEO'] = "PE Outdoor Pursuits";
-dept['PEOL'] = "PE Outdoor Pursuits - Land";
-dept['PEOW'] = "PE Outdoor Pursuits - Water";
-dept['PERS'] = "PE Racquet Sports";
-dept['PERU'] = "PE Running";
-dept['PETS'] = "PE Team Sports";
-dept['PEW'] = "PE Weight Training";
-dept['PHIL'] = "Philosophy";
-dept['PHYS'] = "Physics";
-dept['PORT'] = "Portuguese";
-dept['PPPM'] = "Planning Public Policy Mgmt";
-dept['PS'] = "Political Science";
-dept['PSY'] = "Psychology";
-dept['REES'] = "Russ, E Euro & Eurasia Studies";
-dept['REL'] = "Religious Studies";
-dept['RL'] = "Romance Languages";
-dept['RUSS'] = "Russian";
-dept['SAPP'] = "Substance Abuse Prev Prog";
-dept['SBUS'] = "Sports Business";
-dept['SCAN'] = "Scandinavian";
-dept['SCYP'] = "Sustainable City Year Program";
-dept['SERV'] = "Service Learning";
-dept['SOC'] = "Sociology";
-dept['SPAN'] = "Spanish";
-dept['SPED'] = "Special Education";
-dept['SPSY'] = "School Psychology";
-dept['SWAH'] = "Swahili";
-dept['SWED'] = "Swedish";
-dept['TA'] = "Theater Arts";
-dept['TLC'] = "Univ Teaching & Learning Ctr";
-dept['WGS'] = "Women's & Gender Studies";
-dept['WR'] = "Writing";
-
+// Flag to gather a sample of the data in order to generate benchmarks for
+// ranking instructors and courses by percentiles.
+// true - generates a report
+// false - normal operation
+var scraping = false;
+var scrapeData = [[],[],[],[],[],[],[]];
+numAttempts = 0;
+numSamples = 0;
 
 /* Returns the x-button html for the tooltip id provided. */
 function xButton (id) {
@@ -183,95 +40,29 @@ function xButtonBG () {
   		});
 }
 
-
-
-/* Recieves Messages, manages message queues, and prompts page updates when the
-user clicks any of the highlighted links. */
-chrome.runtime.onMessage.addListener(
-	function(message, sender, sendResponse) {
-		messageOut = false;
-		// Distinguish ack from response
-		if(message.response == "ack") {
-			// Do nothing
-		} else {
-			// Update Tooltip with contents from message
-			var lastToolTipId = toolTipQueue.shift();
-			$("#" + lastToolTipId).tooltip('close'); //close and reopen the tooltip to update content
-
-			var attr = $("#" + lastToolTipId).attr('title');
-			if (typeof attr == 'undefined' || attr == false)
-				$("#" + lastToolTipId).tooltip({content: xButton(lastToolTipId) + formatAverages(message.response)});
-			else 
-				$("#" + lastToolTipId).tooltip({content: xButton(lastToolTipId) + formatAveragesCourses(message.response, $("#" + lastToolTipId).attr("title"))});
-				
-			$("#" + lastToolTipId).tooltip('open'); //reopen tooltip
-			xButtonBG();
-		}
-		// Send next queued message
-		if(messageQueue.length > 0) {
-			messageOut = true;
-			chrome.runtime.sendMessage(messageQueue.shift());
-		}
-});
-
-/* This function formats the averages data in HTML format for the 
- professors tooltips */
+/* This function formats the data into HTML for the tooltips */
 function formatAverages(av) {
-	if (av == "No results found") // Error handling for no professor found
-		return "No results found";
+	console.log("format avs");
+	if (av == "No Data Available") // Error handling for no professor found
+		return "No Data Available";
 	
 	// Title
-	var str = "<h3>Instructor Evaluations For " + av[av.length-1] + "</h3><br /><table>";
-	// Quality of courses
-	str += "<tr><td class='right'><b>Quality of Courses Taught by this Professor:</b></td>";
-	str += "<td><span class='gray-bar'> <span class='rating' style='width:" + Math.round(100*(av[0]/5.0)) + "%;'></span></span>" + av[0] + " out of 5</td></tr>";
-	// Quality of Teaching
-	str += "<tr><td class='right'><b>Quality of Teaching:</b> ";
-	str += "<td><span class='gray-bar'> <span class='rating' style='width:" + Math.round(100*(av[1]/5.0)) + "%;'></span></span>" + av[1] + " out of 5</td></tr>";
-	// Organization
-	str += "<tr><td class='right'><b>Professor's Organization:</b> ";
-	str += "<td><span class='gray-bar'> <span class='rating' style='width:" + Math.round(100*(av[2]/5.0)) + "%;'></span></span>" + av[2] + " out of 5</td></tr>";
-	// Use of class time
-	str += "<tr><td class='right'><b>Use of Class Time:</b> ";
-	str += "<td><span class='gray-bar'> <span class='rating' style='width:" + Math.round(100*(av[3]/5.0)) + "%;'></span></span>" + av[3] + " out of 5</td></tr>";
-	// Availability outside of class
-	str += "<tr><td class='right'><b>Availability Outside of Class:</b> ";
-	str += "<td><span class='gray-bar'> <span class='rating' style='width:" + Math.round(100*(av[4]/5.0)) + "%;'></span></span>" + av[4] + " out of 5</td></tr>";
-	// Clarity of Evaluation Guidelines
-	str += "<tr><td class='right'><b>Clarity of Evaluation Guidelines:</b> ";
-	str += "<td><span class='gray-bar'> <span class='rating' style='width:" + Math.round(100*(av[5]/5.0)) + "%;'></span></span>" + av[5] + " out of 5</td></tr>";
-	// Amount Learned.
-	str += "<tr><td style='border-bottom:none;' class='right'><b>Amount Learned in Courses Taught by this Professor:</b> ";
-	str += "<td style='border-bottom:none;'><span class='gray-bar'> <span class='rating' style='width:" + Math.round(100*(av[6]/5.0)) + "%;'></span></span>" + av[6] + " out of 5</td></tr>";
-	return str;
-}
-
-/* This function formats the averages data in HTML format for the 
- courses tooltips */
-function formatAveragesCourses(av, n) {
-	if (av == "No results found") // Error handling for no course found
-		return "No results found";
+	var str = "<h3>Course Evaluations For " + av[av.length-1] + "</h3><br /><table>";
+	// Evaluates Each question
+	for(var i = 0; i < 7; i ++) {
+		// Correlates  each score with benchmarks for ranking each instructor on a scale from 1-10
+		var realScore = 1;
+		for(var j = 0; j <= 8 && av[i] >= questionBenchmarks[i][j]; j ++) {
+			realScore = j + 2; // j's range is 0-8. Need 2-10
+		}
 		
-	// Title
-	var str = "<h3>Course Evaluations For " + n + "</h3><br /><table>";
-	// Quality of the Course
-	str += "<tr><td class='right'><b>Quality of this course:</b></td>";
-	str += "<td><span class='gray-bar'> <span class='rating' style='width:" + Math.round(100*(av[0]/5.0)) + "%;'></span></span>" + av[0] + " out of 5</td></tr>";
-	// Quality of the Teaching
-	str += "<tr><td class='right'><b>Quality of Teaching:</b> ";
-	str += "<td><span class='gray-bar'> <span class='rating' style='width:" + Math.round(100*(av[1]/5.0)) + "%;'></span></span>" + av[1] + " out of 5</td></tr>";
-	// Organization
-	str += "<tr><td class='right'><b>Course Oragnization:</b> ";
-	str += "<td><span class='gray-bar'> <span class='rating' style='width:" + Math.round(100*(av[2]/5.0)) + "%;'></span></span>" + av[2] + " out of 5</td></tr>";
-	// Clarity of Evaluation
-	str += "<tr><td class='right'><b>Clarity of Evaluation Guidelines:</b> ";
-	str += "<td><span class='gray-bar'> <span class='rating' style='width:" + Math.round(100*(av[5]/5.0)) + "%;'></span></span>" + av[5] + " out of 5</td></tr>";
-	// Amount Learned
-	str += "<tr><td style='border-bottom:none;' class='right'><b>Amount Learned in this course:</b> ";
-	str += "<td style='border-bottom:none;'><span class='gray-bar'> <span class='rating' style='width:" + Math.round(100*(av[6]/5.0)) + "%;'></span></span>" + av[6] + " out of 5</td></tr>";
+		// Generating html for the UI
+		str += "<tr><td class='right'><b>" + questions[i] + ":</b></td><td><span class='gray-bar'>" + 
+				"<span class='rating' style='width:" + realScore*10 + "%;'></span>" +
+				"</span>" + realScore + " out of 10</td></tr>";
+	}
 	return str;
 }
-
 
 /* Get the appropriate highlighted link HTML for professors */
 function getProfLink(name, idx) {
@@ -285,16 +76,86 @@ function getProfLink(name, idx) {
 /* Smoothly uses the messaging system to send a message to the eval page */
 function sendMessage(message) {
 	// If the messaging system is busy
-	if (messageOut) {
+	if (messageOut || firstMessage) {
 		// Cache message to be sent later
 		messageQueue.push(message)
 	} else {
 		// Otherwise send message
 		messageOut = true;
-		chrome.runtime.sendMessage(message);
+		port.postMessage(message);
 	}
 }
 
+// Generates a report for ranking professors and courses by percentiles
+function generateReport() {
+	for(var i = 0; i < 7; i ++) {
+		// Sorts the results for each of the questions in ascending order
+		scrapeData[i] = scrapeData[i].sort(function(a,b){return a-b});
+		// Outputs to console benchmark values for the 10%,20%,...,90% percentiles
+		console.log("Percentile Benchmarks for Question, ", i+1);
+		for(var j = 1; j <=9; j ++) {
+			var step = scrapeData[i].length / 10;
+			console.log("     ", scrapeData[i][step * j]);
+		}
+	}
+}
+
+/* Recieves Messages, manages message queues, and prompts page updates when the
+user clicks any of the highlighted links. */
+var port = chrome.runtime.connect({name: "reg"});
+port.onMessage.addListener( function(message, sender, sendResponse) {
+	messageOut = false;
+
+	if(firstMessage) {
+		// Discard first message. Signifies setup went ok.
+		firstMessage = false;
+		console.log("Setup conplete:");
+	} else if(message.response == "ack") {
+		// Ack: Do nothing
+	} else if(scraping) {
+		if(message.response == "No Data Available") {
+			numAttempts += 1;
+			if(numAttempts >= 5) {
+				// End of the list
+				generateReport();
+			} else {
+				// Hickup. Keep trying and hope it doesn't happen again.
+				sendMessage({scrape: scraping});
+			}
+		} else {
+			// Append data to scrapeData and initiate another round
+			numSamples += 1;
+			numAttempts = 0;
+			console.log("Scrape: Got sample #", numSamples);
+			for(var i = 0; i < 7; i ++) {
+				scrapeData[i].push(message.response[i]);
+			}
+			if(numSamples >= 100) {
+				generateReport();
+			} else {
+				sendMessage({scrape: scraping});
+			}
+		}
+	} else {
+		// Response: Update Tooltip with contents from message
+		var lastToolTipId = toolTipQueue.shift();
+		$("#" + lastToolTipId).tooltip('close'); //close and reopen the tooltip to update content
+
+		var attr = $("#" + lastToolTipId).attr('title');
+		if (typeof attr == 'undefined' || attr == false)
+			$("#" + lastToolTipId).tooltip({content: xButton(lastToolTipId) + formatAverages(message.response)});
+		else 
+			$("#" + lastToolTipId).tooltip({content: xButton(lastToolTipId) + formatAverages(message.response)});
+			
+		$("#" + lastToolTipId).tooltip('open'); //reopen tooltip
+		xButtonBG();
+	}
+	// Send next queued message
+	if(messageQueue.length > 0) {
+		messageOut = true;
+		port.postMessage(messageQueue.shift());
+	}
+});
 
 /* This is the main function which sets up all of the tooltips and injects
  all of the highlighted links on the document's load. This also sets up event
@@ -341,13 +202,13 @@ $(document).ready(function() {
 		var msg = $(this).context.innerText;
 		if(isNaN(msg)){
 			// Message is a Professor's Name
-			var profMsg = {request: true, name: msg.slice(0,-4)};
+			var profMsg = {name: msg.slice(0,-4)};
 			sendMessage(profMsg);
 		}	else {
 			// Message is a class number
 
-			var classMsg1 = {request: true, subject: dept[$(this).attr("title").split(" ")[0]]};
-			var classMsg2 = {request: true, number: msg};
+			var classMsg1 = {subject: dept[$(this).attr("title").split(" ")[0]]};
+			var classMsg2 = {number: msg};
 			sendMessage(classMsg1);
 			sendMessage(classMsg2);
 		}
@@ -409,3 +270,8 @@ $(document).ready(function() {
 		e.stopImmediatePropagation();
 	});
 });
+
+// Sends initial message to start scraping.
+if(scraping) {
+	sendMessage({scrape: scraping});
+}

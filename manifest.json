@@ -16,16 +16,26 @@
 		],
 		"accepts_tls_channel_id": false
 	},
+	
 	"permissions": [
 		"http://*/*",
 		"https://*/*",
 		"tabs",
 		"activeTab"
 	],
+	
 	"background":{
-		"scripts": ["background.js"]
+		"page": "background.html"
 	},
-
+	
+	"content_scripts":[
+		{
+			"matches": ["https://www.applyweb.com/eval/*"],
+			"js": ["injectEval.js"],
+			"all_frames": true,
+			"run_at": "document_idle"
+		}
+	],
   
 	"page_action": {
 		"default_icon": "images/icon48.png",

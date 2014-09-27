@@ -1,34 +1,85 @@
 /*
- * Eval Pal - injectEvalStage3.js
+ * Eval Pal - inject.js
  * CIS 422 Winter 2014
  * Written by: Sarah Yablok & Evan Townsend
- * This file contains the code that gets injected into the applyweb
- * course evaluations page. It receives messages from injectRegistration,
- * and looks up the content accordingly, formats it, and delivers it back via
- * message passing.
+ * This is the content script that gets injected into the applyweb frame.
+ * It determines the current state and navigates to the proper request form.
+ * It then returns any information and sends back a hook for further
+ * communication. When another message is received, it does a best effort
+ * match to available records, and loads the page with those records where
+ * the process is started all over again.
  */
 
+// Sets up the messaging between is page and the background page
+function setupMessaging() {
+	var port = chrome.runtime.connect({name: "eval"});
+	port.onMessage.addListener(recvMessage);
+	port.postMessage(getResults());
+}
 
-// Checks for results data. If present, returns it to the extension.
-function returnResults() {
-	// Acknowledge Half completed course request
+// Dispatches a 'change' event on the given element to cause a page update
+function fireEvent(element) {
+	var evt = document.createEvent("HTMLEvents");
+	evt.initEvent("change", false, true);
+	element.dispatchEvent(evt);
+}
+
+// Navigates the page based on any message from the background page
+function recvMessage(message) {
+	console.log("eval recv: ", message);
+	// Setting Instructor
+	if(message.name != null) {
+		var instructorSelect = document.getElementsByName("instructorSelect")[0];
+		instructorSelect.value = getInstructorId(instructorSelect, message.name);
+		fireEvent(instructorSelect);
+	}
+
+	// Setting Subject
+	if(message.subject != null) {
+		var subjectSelect = document.getElementsByName("subjectSelect")[0];
+		subjectSelect.value = message.subject;
+		fireEvent(subjectSelect);
+	}
+
+	// Setting Course Number
+	if(message.number != null) {
+		var numberSelect = document.getElementsByName("numberSelect")[0];
+		numberSelect.value = message.number;
+		fireEvent(numberSelect);
+	}
+
+	// Scraping a sample for generating percentiles
+	// Advances the instructor selector by 50 until there are no more instructors
+	// Advance by 50 so we get >100 samples out of 6400 instructors
+	if(message.scrape != null) {
+		var instructorSelect = document.getElementsByName("instructorSelect")[0];
+		instructorSelect.selectedIndex += 50;
+		fireEvent(instructorSelect);
+	}
+}
+
+// Returns any results if present
+function getResults() {
 	var subjectSelect = document.getElementsByName("subjectSelect")[0];
 	var numberSelect = document.getElementsByName("numberSelect")[0];
-	if(
-			(subjectSelect.value != "select subject") &&
-			(numberSelect.value == "select course #")) {
-		chrome.runtime.sendMessage({request: false, response: "ack"})
+	if( (subjectSelect.value != "select subject") &&
+		(numberSelect.value == "select course #")) {
+		// Acknowledge Half completed course request
+		return {response: "ack"};
 	} else {
-		// Return results from Query
+		// Send back results
 		var results = document.getElementsByTagName("table");
 		var resultsTestProf  = results[3].getElementsByTagName("tr");
 		var resultsTestClass = results[2].getElementsByTagName("tr");
+		
 		if (resultsTestProf.length > 0) {
-			chrome.runtime.sendMessage({request: false, response: getAverages(resultsTestProf, true)})
+			// Rating for professor
+			return {response: getAverages(resultsTestProf, true)};
 		} else if (resultsTestClass.length > 0) {
-			chrome.runtime.sendMessage({request: false, response: getAverages(resultsTestClass, false)})
+			// rating for class
+			return {response: getAverages(resultsTestClass, false)};
 		} else {
-			chrome.runtime.sendMessage({request: false, response: "No results found"})
+			return {response: "No Data Available"};
 		}
 	}
 };
@@ -150,42 +201,18 @@ function getInstructorId(instructorSelect, name) {
 	return instructorSelect[maxItem].value;
 };
 
-// Setting up message passing
-chrome.runtime.onMessage.addListener(
-	function(message, sender, sendResponse) {
-
-		// Setting Instructor
-		if(message.name != null) {
-			var instructorSelect = document.getElementsByName("instructorSelect")[0];
-			instructorSelect.value = getInstructorId(instructorSelect, message.name);
-			var evt = document.createEvent("HTMLEvents");
-			evt.initEvent("change", false, true);
-			instructorSelect.dispatchEvent(evt);
-		}
-
-		// Setting Subject
-		if(message.subject != null) {
-			var subjectSelect = document.getElementsByName("subjectSelect")[0];
-			subjectSelect.value = message.subject;
-			var evt = document.createEvent("HTMLEvents");
-			evt.initEvent("change", false, true);
-			subjectSelect.dispatchEvent(evt);
-		}
-
-		// Setting Course Number
-		if(message.number != null) {
-			var numberSelect = document.getElementsByName("numberSelect")[0];
-			numberSelect.value = message.number;
-			var evt = document.createEvent("HTMLEvents");
-			evt.initEvent("change", false, true);
-			numberSelect.dispatchEvent(evt);
-		}
-});
-
-// Triggering stuff if page already has been loaded
-if(document.readyState == "complete" || document.readyState == "loaded") {
-	returnResults();
+/*
+*  Navigation - We navigate the pages manually because we land on stage1 automatically,
+*  and we need to grab a dynamic url from stage2.
+*  TODO: We dont want to do anything unless the EvalPal page action is active.
+*/
+if(document.title == "Online Course Evaluations Instructor Home") {
+	console.log("Stage3");
+	setupMessaging();
+} else if (document.getElementById("contentFrame") != null) {
+	console.log("Stage2");
+	window.location.replace(document.getElementById("contentFrame").src);
 } else {
-	// Triggering stuff for when the page loads
-	document.addEventListener('DOMContentLoaded', returnResults);
+	console.log("Stage1", document.title);
+	window.location.replace("https://www.applyweb.com/eval/new/coursesearch");
 }
