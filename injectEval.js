@@ -206,13 +206,23 @@ function getInstructorId(instructorSelect, name) {
 *  and we need to grab a dynamic url from stage2.
 *  TODO: We dont want to do anything unless the EvalPal page action is active.
 */
-if(document.title == "Online Course Evaluations Instructor Home") {
-	console.log("Stage3");
-	setupMessaging();
-} else if (document.getElementById("contentFrame") != null) {
-	console.log("Stage2");
-	window.location.replace(document.getElementById("contentFrame").src);
+function navigate() {
+	if(document.title == "Online Course Evaluations Instructor Home") {
+		console.log("Stage3");
+		setupMessaging();
+	} else if (document.getElementById("contentFrame") != null) {
+		console.log("Stage2");
+		window.location.replace(document.getElementById("contentFrame").src);
+	} else {
+		console.log("Stage1", document.title);
+		window.location.replace("https://www.applyweb.com/eval/new/coursesearch");
+	}
+};
+
+// Triggering navigation if page already has been loaded
+if(document.readyState == "complete" || document.readyState == "loaded") {
+	navigate();
 } else {
-	console.log("Stage1", document.title);
-	window.location.replace("https://www.applyweb.com/eval/new/coursesearch");
+	// Triggering redirect for when the page loads
+	document.addEventListener('DOMContentLoaded', navigate);
 }
