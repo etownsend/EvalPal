@@ -20,6 +20,8 @@ var messageOut = false;
 // true - generates a report
 // false - normal operation
 var scraping = false;
+
+// Holds data from scraping
 var scrapeData = [[],[],[],[],[],[],[]];
 numAttempts = 0;
 numSamples = 0;
@@ -42,9 +44,8 @@ function xButtonBG () {
 
 /* This function formats the data into HTML for the tooltips */
 function formatAverages(av) {
-	console.log("format avs");
-	if (av == "No Data Available") // Error handling for no professor found
-		return "No Data Available";
+	// Error handling for no professor found
+	if (av == "No Data Available") return av;
 	
 	// Title
 	var str = "<h3>Course Evaluations For " + av[av.length-1] + "</h3><br /><table>";
@@ -157,6 +158,7 @@ port.onMessage.addListener( function(message, sender, sendResponse) {
 	}
 });
 
+
 /* This is the main function which sets up all of the tooltips and injects
  all of the highlighted links on the document's load. This also sets up event
  handling for clicks on links, the x-button, and rearranging tabs.*/
@@ -198,15 +200,14 @@ $(document).ready(function() {
 	// Create the tooltip upon clicking
 	$(document).on('click', '.eval', function () {
 		// Detecting if is class number or professor name
-		// Note: slicing string removes things like ' (P)' from the end of the name
 		var msg = $(this).context.innerText;
 		if(isNaN(msg)){
 			// Message is a Professor's Name
-			var profMsg = {name: msg.slice(0,-4)};
+			var profName = msg.split("(")[0].trim(); // Shaving off any possible " (P)" from the end
+			var profMsg = {name: profName};
 			sendMessage(profMsg);
 		}	else {
 			// Message is a class number
-
 			var classMsg1 = {subject: dept[$(this).attr("title").split(" ")[0]]};
 			var classMsg2 = {number: msg};
 			sendMessage(classMsg1);

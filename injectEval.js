@@ -17,6 +17,7 @@ function setupMessaging() {
 	port.postMessage(getResults());
 }
 
+
 // Dispatches a 'change' event on the given element to cause a page update
 function fireEvent(element) {
 	var evt = document.createEvent("HTMLEvents");
@@ -24,9 +25,9 @@ function fireEvent(element) {
 	element.dispatchEvent(evt);
 }
 
+
 // Navigates the page based on any message from the background page
 function recvMessage(message) {
-	console.log("eval recv: ", message);
 	// Setting Instructor
 	if(message.name != null) {
 		var instructorSelect = document.getElementsByName("instructorSelect")[0];
@@ -57,6 +58,7 @@ function recvMessage(message) {
 		fireEvent(instructorSelect);
 	}
 }
+
 
 // Returns any results if present
 function getResults() {
@@ -102,46 +104,19 @@ function getAverages(rows, prof) {
 		// Loop through cells
 		for(var j = 0; j<cells.length; j++) {
 			count += cells[j].colSpan;
-			// Addition of all the column data - professors
-			if(prof) {
-				if (count == 5) {
-					av[0] += parseFloat(cells[j].innerHTML); // Q1
-				} else if (count == 6) {
-					av[1] += parseFloat(cells[j].innerHTML); // Q2
-				} else if (count == 7) {
-					av[2] += parseFloat(cells[j].innerHTML); // Q3
-				} else if (count == 8) {
-					av[3] += parseFloat(cells[j].innerHTML); // Q4
-				} else if (count == 9) {
-					av[4] += parseFloat(cells[j].innerHTML); // Q5
-				} else if (count == 10) {
-					av[5] += parseFloat(cells[j].innerHTML); // Q6
-				} else if (count == 11) {
-					av[6] += parseFloat(cells[j].innerHTML); // Q7
-				}
-			// Addition of all the column data - courses
-			} else {
-				if (count == 4) {
-					av[0] += parseFloat(cells[j].innerHTML); // Q1
-				} else if (count == 5) {
-					av[1] += parseFloat(cells[j].innerHTML); // Q2
-				} else if (count == 6) {
-					av[2] += parseFloat(cells[j].innerHTML); // Q3
-				} else if (count == 7) {
-					av[3] += parseFloat(cells[j].innerHTML); // Q4
-				} else if (count == 8) {
-					av[4] += parseFloat(cells[j].innerHTML); // Q5
-				} else if (count == 9) {
-					av[5] += parseFloat(cells[j].innerHTML); // Q6
-				} else if (count == 10) {
-					av[6] += parseFloat(cells[j].innerHTML); // Q7
-				}
+			// Add of all the column data - professors
+			if(prof && (count >= 5 && count <= 11)) {
+				av[count-5] += parseFloat(cells[j].innerHTML);
+			} 
+			// Add of all the column data - courses
+			if(!prof && (count >= 4 && count <= 10)) {
+				av[count-4] += parseFloat(cells[j].innerHTML);
 			}
 		}
 		count++;
 	}
 	// Divide by the total number of entries.
-	for (var i = 0; i < av.length; i++) {
+	for (var i = 0; i < av.length-1; i++) {
 		av[i] /= parseFloat(rows.length - 9);
 		av[i] = av[i].toFixed(2);
 	}
@@ -156,9 +131,10 @@ function getAverages(rows, prof) {
 	return av;
 }
 
+
 /* Generates an integer which indicates a subjective degree of matching
  between two strings. Optimized for matching names with tokens
- truncated or out of order or both. */
+ truncated or out of order or both. Doesn't work for nicknames*/
 function getMatchValue(first, second) {
 	var splitFirst = first.split(/[ ,]+/);
 	var splitSecond = second.split(/[ ,]+/);
@@ -173,7 +149,10 @@ function getMatchValue(first, second) {
 				if (splitFirst[i].charAt(k) == splitSecond[j].charAt(k)) {
 					tokenMatch ++;
 				} else {
-					tokenMatch = 0;
+					// Discard words that have an inconsistency in their spelling
+					// Makes the search less tolerant of nicknames and misspellings
+					// While better handling names with the first few letters in common
+					//tokenMatch = 0;
 					break;
 				};
 			}
@@ -183,6 +162,7 @@ function getMatchValue(first, second) {
 	}
 	return totalMatch;
 }
+
 
 // Uses a fuzzy search to match instructor with its id.
 function getInstructorId(instructorSelect, name) {
@@ -207,22 +187,31 @@ function getInstructorId(instructorSelect, name) {
 *  TODO: We dont want to do anything unless the EvalPal page action is active.
 */
 function navigate() {
-	if(document.title == "Online Course Evaluations Instructor Home") {
-		console.log("Stage3");
-		setupMessaging();
-	} else if (document.getElementById("contentFrame") != null) {
-		console.log("Stage2");
-		window.location.replace(document.getElementById("contentFrame").src);
-	} else {
-		console.log("Stage1", document.title);
-		window.location.replace("https://www.applyweb.com/eval/new/coursesearch");
-	}
+	// Checking to see if the extension is active
+	chrome.runtime.sendMessage({probe: "getEnabled"}, function(response) {
+		if(response) {
+			// Do page navigation 
+			if(document.title == "Online Course Evaluations Instructor Home") {
+				//console.log("Stage3", window.location.toString());
+				setupMessaging();
+			} else if (document.getElementById("contentFrame") != null) {
+				//console.log("Stage2");
+				window.location.replace(document.getElementById("contentFrame").src);
+			} else {
+				//console.log("Stage1");
+				window.location.replace("https://www.applyweb.com/eval/new/coursesearch");
+			}
+		} else {
+			console.log("User initiated applyweb instance.");
+		}
+	})
 };
+
 
 // Triggering navigation if page already has been loaded
 if(document.readyState == "complete" || document.readyState == "loaded") {
 	navigate();
 } else {
-	// Triggering redirect for when the page loads
+	// Triggering navigation for when the page loads
 	document.addEventListener('DOMContentLoaded', navigate);
 }
